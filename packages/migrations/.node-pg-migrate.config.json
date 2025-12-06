@@ -1,0 +1,11 @@
+{
+  "database-url": {
+    "env": "DATABASE_URL"
+  },
+  "migrations-dir": "src/migrations",
+  "dir": "src/migrations",
+  "migration-file-language": "ts",
+  "migrations-table": "pgmigrations",
+  "timestamp": true,
+  "decamelize": false
+}

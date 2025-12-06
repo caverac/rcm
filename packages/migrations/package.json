@@ -1,0 +1,23 @@
+{
+  "name": "@rcm/migrations",
+  "version": "1.0.0",
+  "description": "Database migrations for Revenue Cycle Management",
+  "type": "module",
+  "scripts": {
+    "migrate": "node-pg-migrate",
+    "migrate:up": "node-pg-migrate up",
+    "migrate:down": "node-pg-migrate down",
+    "migrate:create": "node-pg-migrate create",
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "node-pg-migrate": "^8.0.3",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/pg": "^8.15.6",
+    "typescript": "^5.9.3"
+  }
+}
