@@ -11,6 +11,8 @@
     "build": "yarn workspaces foreach -ptA run build",
     "clean": "yarn workspaces foreach -ptA run clean",
     "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "type-check": "yarn workspaces foreach -ptA run type-check"
   },
   "devDependencies": {

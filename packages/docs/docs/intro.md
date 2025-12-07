@@ -18,28 +18,36 @@ RCM MCP Server is a Model Context Protocol (MCP) server that provides intelligen
 ## Key Features
 
 ### 🎯 Intelligent Denial Triage
+
 Automatically classify denial codes and get action recommendations based on your organization's policies. The system considers:
+
 - Denial category and appealability
 - Amount thresholds
 - Recovery probability
 - Days to action deadlines
 
 ### 📊 Cash Leakage Analytics
+
 Identify patterns and prevent revenue loss with comprehensive analytics:
+
 - Group denials by category, payer, or code
 - Identify high-volume low-value vs. low-volume high-value denials
 - Detect concentration risks
 - Get actionable recommendations
 
 ### ✅ Pre-Submission Validation
+
 Catch coding errors before claims are submitted:
+
 - Modifier requirements (25, 50, 59, RT/LT)
 - Diagnosis support validation
 - Bundling and NCCI edits
 - Payer-specific rules
 
 ### ⚙️ Configurable Policies
+
 Customize for your organization:
+
 - Appeal thresholds by payer and category
 - Auto-processing rules
 - Write-off limits
@@ -77,17 +85,20 @@ Customize for your organization:
 Get started in 5 minutes:
 
 1. **Install dependencies**
+
    ```bash
    yarn install
    ```
 
 2. **Deploy infrastructure** (optional for cloud mode)
+
    ```bash
    cd packages/infrastructure
    yarn deploy
    ```
 
 3. **Run migrations** (if using PostgreSQL)
+
    ```bash
    cd packages/migrations
    export DATABASE_URL="postgresql://..."

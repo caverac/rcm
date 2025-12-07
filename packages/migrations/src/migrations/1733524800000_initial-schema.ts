@@ -1,12 +1,8 @@
-import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate';
+import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate'
 
-export const shorthands: ColumnDefinitions | undefined = undefined;
+export const shorthands: ColumnDefinitions | undefined = undefined
 
-export async function up(pgm: MigrationBuilder): Promise<void> {
-  // Enable UUID extension
-  pgm.createExtension('uuid-ossp', { ifNotExists: true });
-
-  // Payers table
+const createPayersTable = (pgm: MigrationBuilder) => {
   pgm.createTable('payers', {
     id: {
       type: 'uuid',
@@ -17,11 +13,20 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     name: { type: 'varchar(255)', notNull: true },
     type: { type: 'varchar(50)' }, // commercial, medicare, medicaid, etc.
     contact_info: { type: 'jsonb' },
-    created_at: { type: 'timestamp', notNull: true, default: pgm.func('now()') },
-    updated_at: { type: 'timestamp', notNull: true, default: pgm.func('now()') },
-  });
+    created_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
+    updated_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
+  })
+}
 
-  // Claims table with comprehensive billing information
+const createClaimsTable = (pgm: MigrationBuilder) => {
   pgm.createTable('claims', {
     id: {
       type: 'uuid',
@@ -35,7 +40,8 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       type: 'varchar(50)',
       notNull: true,
       default: 'pending',
-      check: "status IN ('pending', 'submitted', 'paid', 'denied', 'appealed', 'written_off')",
+      check:
+        "status IN ('pending', 'submitted', 'paid', 'denied', 'appealed', 'written_off')",
     },
     amount: { type: 'decimal(10,2)', notNull: true },
     paid_amount: { type: 'decimal(10,2)' },
@@ -43,23 +49,40 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     submitted_date: { type: 'timestamp' },
     // Billing codes
     cpt_codes: { type: 'jsonb', comment: 'Array of CPT codes with modifiers' },
-    diagnosis_codes: { type: 'jsonb', comment: 'Array of ICD-10 diagnosis codes' },
+    diagnosis_codes: {
+      type: 'jsonb',
+      comment: 'Array of ICD-10 diagnosis codes',
+    },
     // Additional claim data
     place_of_service: { type: 'varchar(10)' },
     claim_type: { type: 'varchar(50)' }, // professional, institutional, etc.
     raw_data: { type: 'jsonb', comment: 'Raw 837/835 data' },
-    created_at: { type: 'timestamp', notNull: true, default: pgm.func('now()') },
-    updated_at: { type: 'timestamp', notNull: true, default: pgm.func('now()') },
-  });
+    created_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
+    updated_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
+  })
+}
 
-  // Denials table
+const createDenialsTable = (pgm: MigrationBuilder) => {
   pgm.createTable('denials', {
     id: {
       type: 'uuid',
       primaryKey: true,
       default: pgm.func('uuid_generate_v4()'),
     },
-    claim_id: { type: 'uuid', references: 'claims', onDelete: 'CASCADE', notNull: true },
+    claim_id: {
+      type: 'uuid',
+      references: 'claims',
+      onDelete: 'CASCADE',
+      notNull: true,
+    },
     denial_code: { type: 'varchar(50)', notNull: true }, // CO-197, PR-1, etc.
     denial_category: { type: 'varchar(100)' }, // AUTHORIZATION, CODING_ERROR, etc.
     denial_reason: { type: 'text' },
@@ -75,11 +98,20 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     recovered_amount: { type: 'decimal(10,2)' },
     // Additional metadata
     raw_data: { type: 'jsonb', comment: 'Raw 835 denial data' },
-    created_at: { type: 'timestamp', notNull: true, default: pgm.func('now()') },
-    updated_at: { type: 'timestamp', notNull: true, default: pgm.func('now()') },
-  });
+    created_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
+    updated_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
+  })
+}
 
-  // Denial codes reference table
+const createDenialCodeLibraryTable = (pgm: MigrationBuilder) => {
   pgm.createTable('denial_code_library', {
     id: {
       type: 'uuid',
@@ -92,10 +124,15 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     is_appealable: { type: 'boolean', default: true },
     common_resolution: { type: 'text' },
     prevention_tips: { type: 'text' },
-    created_at: { type: 'timestamp', notNull: true, default: pgm.func('now()') },
-  });
+    created_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
+  })
+}
 
-  // Organization policies for denial management
+const createOrgPoliciesTable = (pgm: MigrationBuilder) => {
   pgm.createTable('org_policies', {
     id: {
       type: 'uuid',
@@ -115,11 +152,20 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     // Additional config
     config: { type: 'jsonb' },
     is_active: { type: 'boolean', default: true },
-    created_at: { type: 'timestamp', notNull: true, default: pgm.func('now()') },
-    updated_at: { type: 'timestamp', notNull: true, default: pgm.func('now()') },
-  });
+    created_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
+    updated_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
+  })
+}
 
-  // Coding rules for audit_coding tool
+const createCodingRulesTable = (pgm: MigrationBuilder) => {
   pgm.createTable('coding_rules', {
     id: {
       type: 'uuid',
@@ -131,30 +177,50 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     cpt_code: { type: 'varchar(10)' },
     cpt_pattern: { type: 'varchar(100)' }, // regex pattern for matching multiple CPTs
     required_modifier: { type: 'varchar(10)' },
-    incompatible_codes: { type: 'jsonb', comment: 'Array of CPT codes that cannot be billed together' },
+    incompatible_codes: {
+      type: 'jsonb',
+      comment: 'Array of CPT codes that cannot be billed together',
+    },
     required_diagnosis_pattern: { type: 'varchar(100)' }, // ICD-10 pattern
     payer_specific: { type: 'uuid', references: 'payers', onDelete: 'CASCADE' },
     error_message: { type: 'text', notNull: true },
     severity: { type: 'varchar(20)', notNull: true, default: 'warning' }, // error, warning, info
     is_active: { type: 'boolean', default: true },
-    created_at: { type: 'timestamp', notNull: true, default: pgm.func('now()') },
-  });
+    created_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
+  })
+}
+
+export async function up(pgm: MigrationBuilder): Promise<void> {
+  // Enable UUID extension
+  pgm.createExtension('uuid-ossp', { ifNotExists: true })
+
+  // Tables
+  createPayersTable(pgm)
+  createClaimsTable(pgm)
+  createDenialsTable(pgm)
+  createDenialCodeLibraryTable(pgm)
+  createOrgPoliciesTable(pgm)
+  createCodingRulesTable(pgm)
 
   // Indexes for performance
-  pgm.createIndex('claims', 'patient_id');
-  pgm.createIndex('claims', 'payer_id');
-  pgm.createIndex('claims', 'status');
-  pgm.createIndex('claims', 'submitted_date');
-  pgm.createIndex('denials', 'claim_id');
-  pgm.createIndex('denials', 'denial_code');
-  pgm.createIndex('denials', 'denial_category');
-  pgm.createIndex('denials', 'denial_date');
-  pgm.createIndex('denials', 'resolution_status');
-  pgm.createIndex('denial_code_library', 'category');
-  pgm.createIndex('org_policies', 'payer_id');
-  pgm.createIndex('org_policies', ['policy_type', 'is_active']);
-  pgm.createIndex('coding_rules', 'cpt_code');
-  pgm.createIndex('coding_rules', ['rule_type', 'is_active']);
+  pgm.createIndex('claims', 'patient_id')
+  pgm.createIndex('claims', 'payer_id')
+  pgm.createIndex('claims', 'status')
+  pgm.createIndex('claims', 'submitted_date')
+  pgm.createIndex('denials', 'claim_id')
+  pgm.createIndex('denials', 'denial_code')
+  pgm.createIndex('denials', 'denial_category')
+  pgm.createIndex('denials', 'denial_date')
+  pgm.createIndex('denials', 'resolution_status')
+  pgm.createIndex('denial_code_library', 'category')
+  pgm.createIndex('org_policies', 'payer_id')
+  pgm.createIndex('org_policies', ['policy_type', 'is_active'])
+  pgm.createIndex('coding_rules', 'cpt_code')
+  pgm.createIndex('coding_rules', ['rule_type', 'is_active'])
 
   // Create updated_at trigger function
   pgm.createFunction(
@@ -171,38 +237,38 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       RETURN NEW;
     END;
     `
-  );
+  )
 
   // Add updated_at triggers
-  const tables = ['payers', 'claims', 'denials', 'org_policies'];
+  const tables = ['payers', 'claims', 'denials', 'org_policies']
   tables.forEach((table) => {
     pgm.createTrigger(table, 'update_updated_at', {
       when: 'BEFORE',
       operation: 'UPDATE',
       function: 'update_updated_at_column',
       level: 'ROW',
-    });
-  });
+    })
+  })
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
   // Drop triggers
-  const tables = ['payers', 'claims', 'denials', 'org_policies'];
+  const tables = ['payers', 'claims', 'denials', 'org_policies']
   tables.forEach((table) => {
-    pgm.dropTrigger(table, 'update_updated_at', { ifExists: true });
-  });
+    pgm.dropTrigger(table, 'update_updated_at', { ifExists: true })
+  })
 
   // Drop function
-  pgm.dropFunction('update_updated_at_column', [], { ifExists: true });
+  pgm.dropFunction('update_updated_at_column', [], { ifExists: true })
 
   // Drop tables in reverse order
-  pgm.dropTable('coding_rules', { ifExists: true, cascade: true });
-  pgm.dropTable('org_policies', { ifExists: true, cascade: true });
-  pgm.dropTable('denial_code_library', { ifExists: true, cascade: true });
-  pgm.dropTable('denials', { ifExists: true, cascade: true });
-  pgm.dropTable('claims', { ifExists: true, cascade: true });
-  pgm.dropTable('payers', { ifExists: true, cascade: true });
+  pgm.dropTable('coding_rules', { ifExists: true, cascade: true })
+  pgm.dropTable('org_policies', { ifExists: true, cascade: true })
+  pgm.dropTable('denial_code_library', { ifExists: true, cascade: true })
+  pgm.dropTable('denials', { ifExists: true, cascade: true })
+  pgm.dropTable('claims', { ifExists: true, cascade: true })
+  pgm.dropTable('payers', { ifExists: true, cascade: true })
 
   // Drop extension
-  pgm.dropExtension('uuid-ossp', { ifExists: true });
+  pgm.dropExtension('uuid-ossp', { ifExists: true })
 }

@@ -2,10 +2,11 @@
   "database-url": {
     "env": "DATABASE_URL"
   },
-  "migrations-dir": "src/migrations",
-  "dir": "src/migrations",
-  "migration-file-language": "ts",
+  "migrations-dir": "dist/migrations",
+  "dir": "dist/migrations",
+  "migration-file-language": "js",
   "migrations-table": "pgmigrations",
   "timestamp": true,
-  "decamelize": false
+  "decamelize": false,
+  "ignore-pattern": "\\.(d\\.ts|map)$"
 }

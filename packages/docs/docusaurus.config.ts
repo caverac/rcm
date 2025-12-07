@@ -1,35 +1,25 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
-import type * as Preset from '@docusaurus/preset-classic';
-
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+import { themes as prismThemes } from 'prism-react-renderer'
+import type { Config } from '@docusaurus/types'
+import type * as Preset from '@docusaurus/preset-classic'
 
 const config: Config = {
-  title: 'RCM MCP Server',
-  tagline: 'Revenue Cycle Management with AI-powered denial triage and analytics',
+  title: 'RCM',
+  tagline:
+    'Revenue Cycle Management with AI-powered denial triage and analytics',
   favicon: 'img/favicon.ico',
 
-  // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
-    v4: true, // Improve compatibility with the upcoming Docusaurus v4
+    v4: true,
   },
 
-  // Set the production url of your site here
-  url: 'https://cavera.github.io', // Update with your GitHub username
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/rcm/', // Update with your repo name
+  url: 'https://caverac.github.io',
+  baseUrl: '/rcm/',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'cavera', // Update with your GitHub username
-  projectName: 'rcm', // Update with your repo name
+  organizationName: 'caverac',
+  projectName: 'rcm',
 
   onBrokenLinks: 'throw',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -41,9 +31,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/cavera/rcm/tree/main/packages/docs/', // Update with your repo URL
+          editUrl: 'https://github.com/caverac/rcm/tree/main/packages/docs/',
         },
         blog: {
           showReadingTime: true,
@@ -51,10 +39,7 @@ const config: Config = {
             type: ['rss', 'atom'],
             xslt: true,
           },
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/cavera/rcm/tree/main/packages/docs/',
-          // Useful options to enforce blogging best practices
+          editUrl: 'https://github.com/caverac/rcm/tree/main/packages/docs/',
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
@@ -67,13 +52,12 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'RCM MCP Server',
+      title: 'RCM',
       logo: {
         alt: 'RCM Logo',
         src: 'img/logo.svg',
@@ -85,9 +69,9 @@ const config: Config = {
           position: 'left',
           label: 'Documentation',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
+        { to: '/blog', label: 'Blog', position: 'left' },
         {
-          href: 'https://github.com/cavera/rcm', // Update with your repo URL
+          href: 'https://github.com/caverac/rcm',
           label: 'GitHub',
           position: 'right',
         },
@@ -143,6 +127,6 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
-};
+}
 
-export default config;
+export default config

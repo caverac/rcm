@@ -1,111 +1,121 @@
-# Revenue Cycle Management (RCM) Application
+# RCM MCP Server
 
-A TypeScript monorepo for a revenue cycle management application built with Yarn 4 workspaces.
+[![Documentation](https://img.shields.io/badge/docs-live-blue)](https://caverac.github.io/rcm/)
+[![GitHub](https://img.shields.io/badge/GitHub-caverac%2Frcm-blue)](https://github.com/caverac/rcm)
 
-## Structure
+Revenue Cycle Management platform with AI-powered denial triage, cash leakage analytics, and pre-submission validation.
+
+## 🚀 Quick Start
+
+### Local Development with Docker
+
+1. **Start PostgreSQL database:**
+
+   ```bash
+   docker-compose up -d postgres
+   ```
+
+2. **Run migrations:**
+
+   ```bash
+   cd packages/migrations
+   yarn migrate:up
+   ```
+
+3. **Start MCP server:**
+   ```bash
+   cd packages/mcp-server
+   yarn build && node dist/index.js
+   ```
+
+### Without Docker
+
+See [Full Installation Guide](https://caverac.github.io/rcm/docs/getting-started/installation)
+
+## 📦 Project Structure
 
 ```
 rcm/
 ├── packages/
-│   ├── mcp-server/         # Model Context Protocol server
-│   └── infrastructure/     # AWS CDK infrastructure
-├── .yarn/                  # Yarn 4 configuration and cache
-├── eslint.config.mjs       # ESLint configuration
-├── tsconfig.base.json      # Base TypeScript configuration
-└── package.json            # Root package.json with workspace config
+│   ├── shared-types/      # Zod schemas & shared TypeScript types
+│   ├── coding/            # Medical coding assignment engine
+│   ├── mcp-server/        # MCP server with AI tools
+│   ├── migrations/        # PostgreSQL database migrations
+│   ├── infrastructure/    # AWS CDK infrastructure code
+│   └── docs/              # Docusaurus documentation site
+├── docker-compose.yml     # Local PostgreSQL setup
+└── .env.example          # Environment variables template
 ```
 
-## Prerequisites
+## 🎯 Core Workflows
 
-- Node.js 20+
-- Yarn 4.2.2 (managed via corepack)
+### Flow A: Denial Triage
 
-## Getting Started
+AI-powered denial classification and action recommendations
 
-Install dependencies:
+- Tools: `classify_denial`, `suggest_next_action`
+- [Learn more →](https://caverac.github.io/rcm/docs/workflows/denial-triage)
+
+### Flow B: Cash Leakage Analysis
+
+Identify patterns and prevent revenue loss
+
+- Tools: `batch_classify_denials`
+- [Learn more →](https://caverac.github.io/rcm/docs/workflows/cash-leakage)
+
+### Flow C: Pre-Submission Validation
+
+Catch coding errors before submission
+
+- Tools: `normalize_claim`, `audit_coding`
+- [Learn more →](https://caverac.github.io/rcm/docs/workflows/pre-submission)
+
+## 🛠 Technology Stack
+
+- **Database:** PostgreSQL 16 (chosen for complex analytics)
+- **Backend:** Node.js + TypeScript
+- **Schema Validation:** Zod
+- **Infrastructure:** AWS CDK (RDS, VPC, S3)
+- **AI Integration:** Claude via Model Context Protocol
+- **Testing:** Jest with 100% coverage target
+- **Documentation:** Docusaurus
+
+## 📚 Documentation
+
+**Full documentation:** https://caverac.github.io/rcm/
+
+- [Getting Started](https://caverac.github.io/rcm/docs/getting-started/installation)
+- [Workflow Examples](https://caverac.github.io/rcm/docs/workflows/denial-triage)
+- [API Reference](https://caverac.github.io/rcm/docs/mcp-server/overview)
+- [Infrastructure Guide](https://caverac.github.io/rcm/docs/infrastructure/deployment)
+
+## 🧪 Testing
 
 ```bash
-yarn install
+# Run all tests
+yarn test
+
+# Watch mode
+yarn test:watch
+
+# Coverage report
+yarn test:coverage
 ```
 
-Build all packages:
+## 🤝 Contributing
 
-```bash
-yarn build
-```
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests (maintain 100% coverage)
+5. Submit a pull request
 
-Clean build artifacts:
+## 📄 License
 
-```bash
-yarn clean
-```
+MIT License - see LICENSE file for details
 
-Run linting:
+## 🔗 Links
 
-```bash
-yarn lint
-```
-
-Type check all packages:
-
-```bash
-yarn type-check
-```
-
-## Packages
-
-### @rcm/mcp-server
-
-Model Context Protocol server for revenue cycle management operations. Provides tools for:
-- Creating insurance claims
-- Retrieving claim information
-- Updating claim status
-- Listing claims by patient
-
-[View package README](./packages/mcp-server/README.md)
-
-### @rcm/infrastructure
-
-AWS CDK infrastructure as code for the RCM application. Includes:
-- DynamoDB tables for claims data
-- S3 buckets for document storage
-- Lambda functions for processing
-- API Gateway for REST endpoints
-
-[View package README](./packages/infrastructure/README.md)
-
-## Development
-
-### Working with Individual Packages
-
-Navigate to a package directory and run package-specific commands:
-
-```bash
-cd packages/mcp-server
-yarn build
-yarn dev
-```
-
-### Building
-
-The monorepo uses TypeScript with strict mode enabled. All packages are built in parallel using Yarn workspaces.
-
-### Linting
-
-ESLint 9 is configured with the flat config format and TypeScript support. Run linting from the root:
-
-```bash
-yarn lint
-```
-
-## Technology Stack
-
-- **Package Manager**: Yarn 4.2.2 (Berry)
-- **Language**: TypeScript 5.7.2
-- **Linting**: ESLint 9.17.0
-- **Infrastructure**: AWS CDK 2.174.2
-- **MCP SDK**: @modelcontextprotocol/sdk 1.24.3
-
-## License
-
-UNLICENSED
+- **Documentation:** https://caverac.github.io/rcm/
+- **Repository:** https://github.com/caverac/rcm
+- **Issues:** https://github.com/caverac/rcm/issues

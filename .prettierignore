@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+.yarn
+.pnp.*
+
+# Build outputs
+dist
+**/dist
+build
+**/build
+*.tsbuildinfo
+
+# Coverage
+coverage
+
+# Misc
+.DS_Store
+*.log
+.env
+.env.local
+
+# Documentation build
+.docusaurus
+.cache-loader
+
+# IDE
+.vscode
+.idea

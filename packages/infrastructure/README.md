@@ -125,11 +125,13 @@ yarn migrate:up
 ## Cost Optimization
 
 For development:
+
 - Uses t4g.micro RDS instance (~$15/month)
 - Single NAT Gateway (~$32/month)
 - Storage auto-scales only when needed
 
 For production, consider:
+
 - Multi-AZ deployment for high availability
 - Larger instance types based on workload
 - Additional NAT Gateways for redundancy

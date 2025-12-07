@@ -13,6 +13,7 @@ The denial triage workflow helps you quickly understand denial reasons and get a
 ## Example Scenario
 
 **User Input:**
+
 ```
 "We're getting CO-197 denials on outpatient imaging. One claim is $450 for CPT 70553. What should we do?"
 ```
@@ -24,6 +25,7 @@ The denial triage workflow helps you quickly understand denial reasons and get a
 ChatGPT calls `classify_denial` with "CO-197":
 
 **Response:**
+
 ```json
 {
   "code": "CO-197",
@@ -40,15 +42,17 @@ ChatGPT calls `classify_denial` with "CO-197":
 ChatGPT calls `suggest_next_action` with claim details:
 
 **Request:**
+
 ```json
 {
   "claim_id": "CLM-123",
   "denial_code": "CO-197",
-  "denial_amount": 450.00
+  "denial_amount": 450.0
 }
 ```
 
 **Response:**
+
 ```json
 {
   "recommended_action": "appeal",
@@ -74,6 +78,7 @@ ChatGPT synthesizes the information:
 > **This is an AUTHORIZATION denial (missing pre-cert).** For $450, this meets your org's appeal threshold. I recommend appealing within 15 days with a 60% estimated recovery chance.
 >
 > **Next Steps:**
+>
 > 1. Gather pre-auth documentation
 > 2. Submit appeal with medical necessity justification
 > 3. Track status for follow-up
