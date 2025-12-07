@@ -1,19 +1,15 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
+healthcare:
+  label: Healthcare
+  description: Healthcare technology and billing
 
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
+ai:
+  label: AI
+  description: Artificial intelligence and machine learning
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
+revenue-cycle:
+  label: Revenue Cycle
+  description: Revenue cycle management and billing workflows
 
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+mcp:
+  label: MCP
+  description: Model Context Protocol

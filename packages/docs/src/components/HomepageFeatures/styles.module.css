@@ -5,7 +5,41 @@
   width: 100%;
 }
 
-.featureSvg {
-  height: 200px;
-  width: 200px;
+.packageCard {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 2rem;
+  transition: transform 0.2s ease-in-out;
+}
+
+.packageCard:hover {
+  text-decoration: none;
+  color: inherit;
+  transform: translateY(-4px);
+}
+
+.packageCardInner {
+  height: 100%;
+  padding: 2rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  background: var(--ifm-card-background-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.packageCard:hover .packageCardInner {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.packageIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.packageLink {
+  margin-top: 1rem;
+  color: var(--ifm-color-primary);
+  font-weight: 500;
 }

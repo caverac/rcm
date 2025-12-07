@@ -1,0 +1,8 @@
+{
+  "label": "Shared Types",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "TypeScript type definitions shared across packages"
+  }
+}

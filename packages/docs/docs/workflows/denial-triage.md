@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Flow A: Denial Triage
+# Denial Triage
 
 Intelligent denial classification and action recommendations based on organization policies.
 
@@ -11,6 +11,10 @@ Intelligent denial classification and action recommendations based on organizati
 The denial triage workflow helps you quickly understand denial reasons and get actionable recommendations for next steps. It combines denial code classification with your organization's policies to suggest whether to appeal, write off, or take other actions.
 
 ## Example Scenario
+
+:::info Illustrative Example
+The examples in this documentation show illustrative interactions to demonstrate workflow concepts. The specific amounts and data are for demonstration purposes.
+:::
 
 **User Input:**
 
@@ -22,7 +26,7 @@ The denial triage workflow helps you quickly understand denial reasons and get a
 
 ### Step 1: Classify Denial
 
-ChatGPT calls `classify_denial` with "CO-197":
+AI assistant calls `classify_denial` with "CO-197":
 
 **Response:**
 
@@ -39,7 +43,7 @@ ChatGPT calls `classify_denial` with "CO-197":
 
 ### Step 2: Suggest Next Action
 
-ChatGPT calls `suggest_next_action` with claim details:
+AI assistant calls `suggest_next_action` with claim details:
 
 **Request:**
 
@@ -73,7 +77,7 @@ ChatGPT calls `suggest_next_action` with claim details:
 
 ### Step 3: Present to User
 
-ChatGPT synthesizes the information:
+AI assistant synthesizes the information:
 
 > **This is an AUTHORIZATION denial (missing pre-cert).** For $450, this meets your org's appeal threshold. I recommend appealing within 15 days with a 60% estimated recovery chance.
 >
@@ -105,9 +109,9 @@ SET auto_appeal = true
 WHERE policy_name = 'Authorization Denials - Auto Appeal';
 ```
 
-## See Also
+## Next Steps
 
-- [Denial Code Library](../reference/denial-codes.md)
-- [Organization Policies](../reference/org-policies.md)
-- [Tool Reference: classify_denial](../mcp-server/tools/classify-denial.md)
-- [Tool Reference: suggest_next_action](../mcp-server/tools/suggest-next-action.md)
+- **[Cash Leakage Analysis](./cash-leakage.md)** - Identify denial patterns across multiple claims
+- **[Appeals Management](./appeals-management.md)** - Track and manage appeals for denied claims
+- **[Coding Validation](./coding-validation.md)** - Prevent denials before submission
+- **[MCP Server Documentation](/docs/mcp-server/overview)** - Complete tool reference

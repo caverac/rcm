@@ -1,57 +1,79 @@
 import type { ReactNode } from 'react'
 import clsx from 'clsx'
+import Link from '@docusaurus/Link'
 import Heading from '@theme/Heading'
 import styles from './styles.module.css'
 
-type FeatureItem = {
+type PackageItem = {
   title: string
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>
+  icon: string
   description: ReactNode
+  link: string
 }
 
-const FeatureList: FeatureItem[] = [
+const PackageList: PackageItem[] = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'MCP Server',
+    icon: '🤖',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        AI-powered revenue cycle management tools for denial triage, cash
+        leakage analysis, and coding validation. Integrates with AI assistants
+        via Model Context Protocol.
       </>
     ),
+    link: '/docs/mcp-server/overview',
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: 'Database Migrations',
+    icon: '🗄️',
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        PostgreSQL schema migrations for claims, denials, appeals, and
+        analytics. Includes seeded reference data and comprehensive workflow
+        tracking.
       </>
     ),
+    link: '/docs/migrations/setup',
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'Infrastructure',
+    icon: '☁️',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        AWS CDK infrastructure for production deployment. Provisions RDS
+        PostgreSQL, VPC networking, and S3 storage with security best
+        practices.
       </>
     ),
+    link: '/docs/infrastructure/deployment',
+  },
+  {
+    title: 'Shared Types',
+    icon: '📦',
+    description: (
+      <>
+        TypeScript schemas and validation for claims, denials, appeals, and
+        policies. Shared across packages with Zod runtime validation.
+      </>
+    ),
+    link: '/docs/shared-types/overview',
   },
 ]
 
-function Feature({ title, Svg, description }: FeatureItem) {
+function PackageCard({ title, icon, description, link }: PackageItem) {
   return (
-    <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <Heading as="h3">{title}</Heading>
-        <p>{description}</p>
-      </div>
+    <div className={clsx('col col--6')}>
+      <Link to={link} className={styles.packageCard}>
+        <div className={styles.packageCardInner}>
+          <div className={styles.packageIcon}>{icon}</div>
+          <Heading as="h3">{title}</Heading>
+          <p>{description}</p>
+          <div className={styles.packageLink}>
+            View Documentation →
+          </div>
+        </div>
+      </Link>
     </div>
   )
 }
@@ -60,9 +82,16 @@ export default function HomepageFeatures(): ReactNode {
   return (
     <section className={styles.features}>
       <div className="container">
+        <div className="text--center margin-bottom--xl">
+          <Heading as="h2">Packages</Heading>
+          <p>
+            RCM is a monorepo containing multiple packages for healthcare
+            revenue cycle management
+          </p>
+        </div>
         <div className="row">
-          {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
+          {PackageList.map((props, idx) => (
+            <PackageCard key={idx} {...props} />
           ))}
         </div>
       </div>
