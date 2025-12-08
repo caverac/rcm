@@ -2,6 +2,27 @@ import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
+/**
+ * Adds the appeals table for tracking denial appeals.
+ *
+ * Table created:
+ *   - appeals: Tracks appeal submissions for denied claims
+ *       Columns: id, denial_id, claim_id, appeal_type (first/second/third_level, external_review),
+ *                status (pending, in_progress, submitted, under_review, approved, denied, etc.),
+ *                priority (high/medium/low), appeal_amount, filed_date, due_date, decision_date,
+ *                approved_amount, appeal_reason, supporting_documents, notes, assigned_to, payer_response
+ *
+ * Indexes created:
+ *   - appeals: denial_id, claim_id, status, priority, assigned_to, (status, priority)
+ *   - Partial index on due_date for active appeals only
+ *
+ * Schema changes:
+ *   - denials: Added 'appealed' boolean column
+ *
+ * Functions & Triggers:
+ *   - update_denial_appealed(): Auto-sets denials.appealed=true when appeal is created
+ *   - update_updated_at trigger on appeals
+ */
 export async function up(pgm: MigrationBuilder): Promise<void> {
   // Appeals table for managing denial appeals
   pgm.createTable('appeals', {
@@ -132,6 +153,15 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   })
 }
 
+/**
+ * Rolls back the appeals table migration.
+ *
+ * Drops:
+ *   - Triggers: update_denial_appealed_trigger, update_updated_at on appeals
+ *   - Functions: update_denial_appealed
+ *   - Columns: denials.appealed
+ *   - Tables: appeals
+ */
 export async function down(pgm: MigrationBuilder): Promise<void> {
   // Drop triggers
   pgm.dropTrigger('appeals', 'update_denial_appealed_trigger', {

@@ -29,13 +29,13 @@ This database tracks the complete healthcare revenue cycle workflow, from claim 
 
 **What it is:** Insurance companies that pay for medical services.
 
-**Example:** A payer record with ID `550e8400-e29b-41d4-a716-446655440000` represents "Blue Cross Blue Shield - California" (commercial insurance) with contact information and active status. This payer is referenced by all claims submitted to BCBS-CA.
+**Example:** A payer record with ID `550e8400-e29b-41d4-a716-446655440000` represents "Blue Cross Blue Shield - California" (commercial insurance) with contact information (phone: 1-800-555-0101, email: claims@bcbs-ca.example.com). This payer is referenced by all claims submitted to `BCBS-CA-001`.
 
 #### Claims
 
 **What it is:** A billing request submitted to an insurance payer for reimbursement of medical services provided to a patient.
 
-**Example:** A claim with ID `CLM-2024-001234` represents a patient visit where Dr. Smith performed an office consultation (CPT 99213) on January 15, 2024, for hypertension (ICD-10 I10). The claim was submitted to Blue Cross for $150, with an allowed amount of $120. The claim references the payer ID to track which insurance company should pay.
+**Example:** A claim with ID `650e8400-e29b-41d4-a716-446655440001` (`CLM-2024-001234`) represents a patient visit where an office consultation (CPT 99213) was performed on January 15, 2024, for hypertension (ICD-10 I10). The claim was submitted to Blue Cross Blue Shield - California for $150 and paid $120. The claim references payer ID `550e8400-e29b-41d4-a716-446655440000` to track which insurance company should pay.
 
 **Why it matters:** Claims are the foundation of revenue cycle management - they represent money owed to the healthcare provider.
 
@@ -43,39 +43,39 @@ This database tracks the complete healthcare revenue cycle workflow, from claim 
 
 **What it is:** A rejection by the insurance payer refusing to pay all or part of a claim.
 
-**Example:** A denial with ID `DEN-2024-005678` is linked to claim `CLM-2024-001234` with denial code "CO-197" (missing prior authorization). The payer denied the full $150 because no authorization was obtained before the service. The denial has a resolution deadline of February 15, 2024, and is marked as "pending resolution."
+**Example:** A denial with ID `750e8400-e29b-41d4-a716-446655440001` is linked to claim `650e8400-e29b-41d4-a716-446655440002` (`CLM-2024-001235`) with denial code "CO-197" (Precertification/authorization/notification absent). The payer denied the full $500 for an MRI brain with contrast because authorization was not obtained prior to service. The denial is marked as preventable and has resolution status "pending" with an appeal filed.
 
 **Why it references a claim:** Every denial is tied to a specific claim that was rejected. The denial tracks why the claim wasn't paid and what actions are being taken to resolve it.
 
-#### Appeals (Phase 1)
+#### Appeals
 
 **What it is:** A formal request to the insurance payer asking them to reconsider a denial and pay the claim.
 
-**Example:** An appeal with ID `APL-2024-000123` references denial `DEN-2024-005678` (the missing authorization denial). It's a "first_level" appeal for the full $150, filed on January 20, 2024, with a due date of February 20, 2024. The appeal includes supporting documents showing the authorization was actually obtained (stored in the `supporting_documents` JSONB field). The appeal status is "submitted" and priority is "high" because the amount exceeds the organization's threshold. It can be approved (payer agrees to pay), denied (payer upholds denial), or partially approved (payer pays less than requested).
+**Example:** An appeal with ID `850e8400-e29b-41d4-a716-446655440001` references denial `750e8400-e29b-41d4-a716-446655440001` (the `CO-197` authorization denial). It's a "first_level" appeal for $500, filed on January 20, 2024, with a due date of February 20, 2024. The appeal includes supporting documents (`auth_form_12345.pdf`, `clinical_notes_pat002.pdf`) showing the authorization was actually obtained. The appeal status is "submitted" and priority is "high" because the amount exceeds the organization's $250 threshold. Assigned to Jane Smith.
 
 **Why it references both denial and claim:** The appeal needs to reference the denial it's contesting AND the original claim to maintain a complete audit trail.
 
-#### Write-offs (Phase 2)
+#### Write-offs
 
 **What it is:** A decision to stop pursuing payment for a denied claim and accept the financial loss.
 
-**Example:** A write-off with ID `WO-2024-000045` references denial `DEN-2024-005679` where a claim for $15 was denied due to "patient not covered" (PR-1). The organization decided the $15 is too small to pursue (below the $25 small-balance threshold in org_policies), so it's written off. The record tracks that this write-off was NOT preventable (patient eligibility should have been verified upfront), has a root cause of "registration error," and was approved by the billing manager on January 25, 2024.
+**Example:** A write-off with ID `950e8400-e29b-41d4-a716-446655440001` references denial `750e8400-e29b-41d4-a716-446655440002` where claim `650e8400-e29b-41d4-a716-446655440003` (`CLM-2024-001236`) for $15 was denied due to "Deductible amount - patient not covered" (PR-1). The organization decided the $15 is too small to pursue (below the $25 small-balance threshold in org_policies), so it's written off with reason "below_threshold". The record tracks that this write-off WAS preventable (registration error - eligibility not verified), and was approved by the Billing Manager on January 30, 2024.
 
 **Why it references claim and denial:** Links to the claim for financial reporting and to the denial to understand why the write-off was necessary.
 
-#### Rebills (Phase 2)
+#### Rebills
 
 **What it is:** Resubmitting a corrected claim after a denial, fixing the issues that caused the original rejection.
 
-**Example:** A rebill with ID `REB-2024-000089` references denial `DEN-2024-005680` where a claim was denied for "modifier error" (CO-4). The correction type is "modifier_correction" - the biller added modifier 25 to the E/M code. The rebill status is "submitted" with new claim ID `CLM-2024-001567`. If successful, the `recovered_amount` will be updated to $120 when the corrected claim is paid.
+**Example:** A rebill with ID `a50e8400-e29b-41d4-a716-446655440001` references denial `750e8400-e29b-41d4-a716-446655440003` where claim `650e8400-e29b-41d4-a716-446655440004` (`CLM-2024-001237`) was denied for "modifier error" (CO-4). The correction was "added_modifier" - modifier 25 was added to E/M code 99213 to indicate significant, separately identifiable evaluation and management service. The rebill status is "paid" with new claim ID `650e8400-e29b-41d4-a716-446655440005` (`CLM-2024-001567`). The `recovered_amount` is $200 after the corrected claim was paid.
 
 **Why it references claim and denial:** Tracks the original claim that was denied and which denial prompted the rebill, creating an audit trail of the correction workflow.
 
-#### Payment Variances (Phase 2)
+#### Payment Variances
 
 **What it is:** A discrepancy between what the provider expected to receive for a claim and what was actually paid.
 
-**Example:** A payment variance with ID `PV-2024-000234` references claim `CLM-2024-001890` where the expected payment was $500 (based on contracted rates), but the actual payment received was $425. The variance amount is -$75 (underpayment), calculated as -15%. The variance type is "underpayment" and reason category is "incorrect_fee_schedule" - the payer applied wrong rates. Resolution status is "appealed" and the record links to appeal `APL-2024-000167` created to recover the $75 shortfall.
+**Example:** A payment variance with ID `b50e8400-e29b-41d4-a716-446655440001` references claim `650e8400-e29b-41d4-a716-446655440006` (`CLM-2024-001890`) where the expected payment was $500 (based on contracted Medicare rates), but the actual payment received was $425. The variance amount is -$75 (underpayment), calculated as -15%. The variance type is "underpayment" and variance reason is "contract_adjustment" - the payer applied incorrect 2023 fee schedule instead of 2024 rates. The variance requires appeal and is not yet resolved.
 
 **Why it references claim and optionally appeal:** Links to the claim to track payment accuracy and to the appeal if the variance is being contested.
 
@@ -107,15 +107,29 @@ This database tracks the complete healthcare revenue cycle workflow, from claim 
 
 ### Data Flow Example
 
-1. **Claim Submission:** Claim `CLM-2024-001234` is created for a $500 service, referencing payer "United Healthcare"
-2. **Denial Received:** Denial `DEN-2024-005678` is created with code CO-50 (lack of medical necessity), denying $500
-3. **Appeal Filed:** Appeal `APL-2024-000123` is created referencing the denial, requesting reconsideration with clinical documentation
-4. **Two Possible Outcomes:**
-   - **Approved:** Appeal status updates to "approved" with `approved_amount: $500`, claim status updates to "paid"
-   - **Denied:** Appeal status updates to "denied," then either:
-     - Write-off `WO-2024-000045` is created if amount too small to pursue
-     - Rebill `REB-2024-000089` is created if there's a correction to make (e.g., different diagnosis code)
-     - Payment variance `PV-2024-000234` is created if payment received but less than expected
+**Scenario 1: Denial → Appeal (Authorization Issue)**
+1. **Claim Submission:** Claim `CLM-2024-001235` is created for a $500 MRI brain service, referencing payer "Blue Cross Blue Shield - California"
+2. **Denial Received:** Denial `750e8400-e29b-41d4-a716-446655440001` is created with code CO-197 (authorization absent), denying $500
+3. **Appeal Filed:** Appeal `850e8400-e29b-41d4-a716-446655440001` is created referencing the denial, with supporting documents showing authorization was obtained
+4. **Outcome:** Pending - appeal status is "submitted", assigned to Jane Smith
+
+**Scenario 2: Denial → Write-off (Small Balance)**
+1. **Claim Submission:** Claim `CLM-2024-001236` is created for a $15 office visit, referencing payer "United Healthcare"
+2. **Denial Received:** Denial `750e8400-e29b-41d4-a716-446655440002` is created with code PR-1 (patient responsibility)
+3. **Write-off Created:** Write-off `950e8400-e29b-41d4-a716-446655440001` is created because $15 is below the $25 threshold
+4. **Outcome:** Resolution status "abandoned", approved by Billing Manager
+
+**Scenario 3: Denial → Rebill (Coding Error)**
+1. **Claim Submission:** Claim `CLM-2024-001237` is created for $250, missing modifier 25 on E/M code
+2. **Denial Received:** Denial `750e8400-e29b-41d4-a716-446655440003` is created with code CO-4 (modifier error)
+3. **Rebill Created:** Rebill `a50e8400-e29b-41d4-a716-446655440001` corrects the claim with modifier 25 added
+4. **Outcome:** New claim `CLM-2024-001567` paid $200, recovery successful
+
+**Scenario 4: Payment Variance (Underpayment)**
+1. **Claim Submission:** Claim `CLM-2024-001890` is created for $500 office visit with ECG, referencing "Medicare"
+2. **Payment Received:** Only $425 paid instead of expected $500
+3. **Variance Created:** Payment variance `b50e8400-e29b-41d4-a716-446655440001` tracks the -$75 (-15%) underpayment
+4. **Outcome:** Requires appeal - incorrect 2023 fee schedule was applied
 
 ## Setup
 
@@ -123,10 +137,10 @@ This database tracks the complete healthcare revenue cycle workflow, from claim 
 
 ```bash
 # 1. Start PostgreSQL (port 5432)
-docker-compose up -d
+docker-compose up -d --build
 
 # 2. Create environment file
-cp .env.example .env
+cp packages/migrations/.env.example packages/migrations/.env
 
 # 3. Install dependencies
 yarn install
@@ -135,7 +149,10 @@ yarn install
 yarn workspace @rcm/migrations build
 yarn workspace @rcm/migrations migrate:up
 
-# 5. Verify setup
+# 5. Seed demo data (optional)
+yarn workspace @rcm/migrations seed
+
+# 6. Verify setup (optional)
 docker exec -it rcm-postgres psql -U rcm_admin -d rcmdb -c "\dt"
 ```
 
@@ -151,7 +168,7 @@ docker exec -it rcm-postgres psql -U rcm_admin -d rcmdb -c "\dt"
 
 ```bash
 docker-compose --profile tools up -d pgadmin
-# Access at http://localhost:5050 (admin@rcm.local / admin)
+# Access at http://localhost:5050 (admin@example.com / admin)
 ```
 
 ### Alternative Setup
@@ -179,14 +196,10 @@ yarn workspace @rcm/migrations migrate:up
 
 ```bash
 # Stop database (preserves data)
-docker-compose down
+docker-compose down -v
 
 # Start database
-docker-compose up -d
-
-# Reset database (deletes all data)
-docker exec rcm-postgres psql -U rcm_admin -d rcmdb -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public; CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
-yarn workspace @rcm/migrations build && yarn workspace @rcm/migrations migrate:up
+docker-compose up -d --build
 ```
 
 ### Troubleshooting
@@ -215,7 +228,7 @@ yarn migrate:down
 ### Create New Migration
 
 ```bash
-yarn migrate:create my-migration-name
+yarn migrate:create migration-name
 ```
 
 ## Seeded Data
@@ -283,34 +296,39 @@ erDiagram
     write_offs }o--|| claims : "belongs to"
 
     rebills }o--|| denials : "belongs to"
-    rebills }o--|| claims : "belongs to"
+    rebills }o--|| claims : "original claim"
+    rebills }o--o| claims : "new claim (optional)"
 
     payment_variances }o--|| claims : "belongs to"
     payment_variances }o--o| appeals : "may link to"
 
     payers {
         uuid id PK
+        varchar payer_id UK
         varchar name
         varchar type
         jsonb contact_info
-        boolean is_active
         timestamp created_at
         timestamp updated_at
     }
 
     claims {
         uuid id PK
+        varchar claim_id UK
+        varchar patient_id
         uuid payer_id FK
-        varchar claim_id
-        varchar patient_name
-        date service_date
-        varchar cpt_codes
-        varchar diagnosis_codes
-        decimal billed_amount
-        decimal allowed_amount
-        decimal paid_amount
         varchar status
-        jsonb raw_edi_data
+        decimal amount
+        decimal paid_amount
+        date service_date
+        timestamp submitted_date
+        jsonb cpt_codes
+        jsonb diagnosis_codes
+        varchar place_of_service
+        varchar claim_type
+        jsonb raw_data
+        boolean has_payment_variance
+        integer variance_count
         timestamp created_at
         timestamp updated_at
     }
@@ -319,14 +337,22 @@ erDiagram
         uuid id PK
         uuid claim_id FK
         varchar denial_code
-        varchar category
-        text reason
-        decimal denied_amount
+        varchar denial_category
+        text denial_reason
+        decimal denial_amount
+        timestamp denial_date
+        boolean is_preventable
+        varchar root_cause
+        varchar action_taken
+        timestamp action_date
         varchar resolution_status
-        date received_date
-        date resolution_deadline
-        text resolution_notes
+        decimal recovered_amount
+        jsonb raw_data
         boolean appealed
+        boolean written_off
+        timestamp write_off_date
+        boolean rebilled
+        timestamp rebill_date
         timestamp created_at
         timestamp updated_at
     }
@@ -356,30 +382,31 @@ erDiagram
         uuid id PK
         uuid denial_id FK
         uuid claim_id FK
-        varchar reason_category
         decimal write_off_amount
-        boolean is_preventable
-        text root_cause
+        varchar write_off_reason
+        text reason_notes
         varchar approved_by
         timestamp approval_date
-        text notes
+        varchar category
+        boolean is_preventable
         timestamp created_at
         timestamp updated_at
     }
 
     rebills {
         uuid id PK
+        uuid original_claim_id FK
+        uuid new_claim_id FK
         uuid denial_id FK
-        uuid claim_id FK
-        varchar correction_type
+        varchar rebill_reason
+        jsonb changes_made
+        text reason_notes
+        decimal rebill_amount
         varchar status
-        text correction_details
-        decimal original_amount
-        decimal rebilled_amount
-        timestamp rebill_date
-        varchar new_claim_id
+        timestamp submitted_date
+        timestamp resolution_date
         decimal recovered_amount
-        text notes
+        varchar created_by
         timestamp created_at
         timestamp updated_at
     }
@@ -387,40 +414,48 @@ erDiagram
     payment_variances {
         uuid id PK
         uuid claim_id FK
-        uuid appeal_id FK "nullable"
-        decimal expected_payment
-        decimal actual_payment
+        uuid payer_id
+        decimal expected_amount
+        decimal actual_amount
         decimal variance_amount
         decimal variance_percentage
         varchar variance_type
-        varchar reason_category
-        varchar resolution_status
-        text analysis_notes
-        timestamp identified_date
-        timestamp resolved_date
+        varchar variance_reason
+        timestamp payment_date
+        text reason_notes
+        boolean requires_appeal
+        uuid appeal_id FK
+        boolean resolved
+        timestamp resolution_date
+        text resolution_notes
+        varchar created_by
         timestamp created_at
         timestamp updated_at
     }
 
     denial_code_library {
         uuid id PK
-        varchar code
+        varchar code UK
         varchar category
         text description
         boolean is_appealable
-        int appeal_success_rate
-        int avg_recovery_days
-        text recommended_action
+        text common_resolution
+        text prevention_tips
         timestamp created_at
-        timestamp updated_at
     }
 
     org_policies {
         uuid id PK
-        uuid payer_id FK "nullable"
+        varchar policy_name UK
         varchar policy_type
-        varchar policy_name
-        jsonb rules
+        uuid payer_id FK
+        varchar denial_category
+        decimal min_amount
+        decimal max_amount
+        integer days_to_action
+        boolean auto_appeal
+        boolean auto_write_off
+        jsonb config
         boolean is_active
         timestamp created_at
         timestamp updated_at
@@ -428,22 +463,27 @@ erDiagram
 
     coding_rules {
         uuid id PK
-        uuid payer_id FK "nullable"
-        varchar rule_type
         varchar rule_name
-        jsonb validation_criteria
+        varchar rule_type
+        varchar cpt_code
+        varchar cpt_pattern
+        varchar required_modifier
+        jsonb incompatible_codes
+        varchar required_diagnosis_pattern
+        uuid payer_specific FK
+        text error_message
         varchar severity
         boolean is_active
         timestamp created_at
-        timestamp updated_at
     }
 ```
 
 ### Key Relationships
 
 - **Payers** are the root entity, connected to claims and optionally to specific policies and coding rules
-- **Claims** can have multiple denials and payment variances
-- **Denials** can have multiple appeals and rebills, but only one write-off
+- **Claims** can have multiple denials and payment variances; tracks `has_payment_variance` and `variance_count`
+- **Denials** track resolution via `appealed`, `written_off`, and `rebilled` flags with corresponding dates
 - **Appeals, Write-offs, and Rebills** all reference both denial and claim for complete audit trail
+- **Rebills** reference both the original claim and optionally a new claim ID after correction
 - **Payment Variances** track expected vs actual payments and may link to appeals
 - **Reference Tables** (denial_code_library, org_policies, coding_rules) provide validation and workflow rules

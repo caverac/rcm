@@ -8,5 +8,6 @@
   "migrations-table": "pgmigrations",
   "timestamp": true,
   "decamelize": false,
-  "ignore-pattern": "\\.(d\\.ts|map)$"
+  "ignore-pattern": "\\.d\\.ts$|\\.map$",
+  "verbose": false
 }

@@ -51,20 +51,7 @@ Model Context Protocol (MCP) is an open protocol that enables AI assistants to s
 
 See [Migrations Setup](/docs/migrations/setup) for detailed database setup instructions.
 
-```bash
-# From project root
-docker-compose up -d
-cp .env.example .env
-```
-
-**2. Run migrations:**
-
-```bash
-yarn workspace @rcm/migrations build
-yarn workspace @rcm/migrations migrate:up
-```
-
-**3. Build and start MCP server:**
+**2. Build and start MCP server:**
 
 ```bash
 cd packages/mcp-server

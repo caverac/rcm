@@ -2,6 +2,30 @@ import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
+/**
+ * Seeds reference data for the RCM system.
+ *
+ * Data inserted:
+ *   - denial_code_library: 12 common denial codes
+ *       CO-197 (Authorization), CO-16 (Missing Info), CO-4 (Coding Error),
+ *       CO-50 (Non-Covered), CO-22 (Coordination of Benefits), CO-97 (Bundling),
+ *       PR-1 (Deductible), PR-2 (Coinsurance), CO-29 (Timely Filing),
+ *       CO-18 (Duplicate), CO-27 (Eligibility), CO-96 (Non-Covered)
+ *
+ *   - org_policies: 5 default organization policies
+ *       Default Appeal Threshold ($100+, 30 days)
+ *       Authorization Denials Auto-Appeal ($250+, 15 days)
+ *       Small Balance Write-Off (<$25, 90 days)
+ *       Coding Error Quick Fix ($50+, 7 days)
+ *       Patient Responsibility Transfer (immediate, 5 days)
+ *
+ *   - coding_rules: 5 billing validation rules
+ *       Modifier 25 for E/M + Procedure
+ *       Modifier 50 for Bilateral Procedures
+ *       Screening Colonoscopy Diagnosis Requirement
+ *       Modifier 59 for Distinct Services
+ *       Z00.00 Diagnosis Validation Warning
+ */
 export async function up(pgm: MigrationBuilder): Promise<void> {
   // Seed common denial codes
   const denialCodes = [
@@ -253,6 +277,14 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   }
 }
 
+/**
+ * Removes all seeded reference data.
+ *
+ * Deletes all rows from:
+ *   - coding_rules
+ *   - org_policies
+ *   - denial_code_library
+ */
 export async function down(pgm: MigrationBuilder): Promise<void> {
   pgm.sql('DELETE FROM coding_rules')
   pgm.sql('DELETE FROM org_policies')

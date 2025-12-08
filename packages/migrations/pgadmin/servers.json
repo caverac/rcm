@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "RCM Database",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "rcmdb",
+      "Username": "rcm_admin",
+      "SSLMode": "prefer",
+      "PassFile": "/pgpassfile"
+    }
+  }
+}

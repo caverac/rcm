@@ -2,6 +2,29 @@ import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
+/**
+ * Adds the rebills table for tracking claim resubmissions after denial.
+ *
+ * Table created:
+ *   - rebills: Tracks corrected and resubmitted claims
+ *       Columns: id, original_claim_id, new_claim_id, denial_id, rebill_reason
+ *                (corrected_coding, added_modifier, updated_diagnosis, corrected_info,
+ *                 resubmit_timely, provider_change, other),
+ *                changes_made (jsonb), reason_notes, rebill_amount,
+ *                status (pending, submitted, accepted, paid, denied_again, partially_paid),
+ *                submitted_date, resolution_date, recovered_amount, created_by
+ *
+ * Indexes created:
+ *   - rebills: original_claim_id, new_claim_id, denial_id, rebill_reason, status,
+ *              submitted_date, (status, submitted_date)
+ *
+ * Schema changes:
+ *   - denials: Added 'rebilled' boolean and 'rebill_date' timestamp columns
+ *
+ * Functions & Triggers:
+ *   - update_denial_rebilled(): Auto-sets denials.rebilled=true and resolution_status='pending'
+ *   - update_updated_at trigger on rebills
+ */
 export async function up(pgm: MigrationBuilder): Promise<void> {
   // Rebills table for tracking claim resubmissions
   pgm.createTable('rebills', {
@@ -142,6 +165,15 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   })
 }
 
+/**
+ * Rolls back the rebills table migration.
+ *
+ * Drops:
+ *   - Triggers: update_denial_rebilled_trigger, update_updated_at on rebills
+ *   - Functions: update_denial_rebilled
+ *   - Columns: denials.rebilled, denials.rebill_date
+ *   - Tables: rebills
+ */
 export async function down(pgm: MigrationBuilder): Promise<void> {
   // Drop triggers
   pgm.dropTrigger('rebills', 'update_denial_rebilled_trigger', {

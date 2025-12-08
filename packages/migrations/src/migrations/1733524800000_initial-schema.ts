@@ -194,6 +194,28 @@ const createCodingRulesTable = (pgm: MigrationBuilder) => {
   })
 }
 
+/**
+ * Creates the initial database schema for the RCM (Revenue Cycle Management) system.
+ *
+ * Tables created:
+ *   - payers: Insurance companies and payers (id, payer_id, name, type, contact_info)
+ *   - claims: Medical claims submitted for payment (claim_id, patient_id, payer_id, status, amount, cpt_codes, diagnosis_codes, etc.)
+ *   - denials: Claim denials with codes, categories, and resolution tracking
+ *   - denial_code_library: Reference table of denial codes with descriptions and resolution tips
+ *   - org_policies: Organization-specific policies for handling denials (thresholds, auto-appeal rules)
+ *   - coding_rules: Billing code validation rules (modifier requirements, diagnosis support, etc.)
+ *
+ * Indexes created:
+ *   - claims: patient_id, payer_id, status, submitted_date
+ *   - denials: claim_id, denial_code, denial_category, denial_date, resolution_status
+ *   - denial_code_library: category
+ *   - org_policies: payer_id, (policy_type, is_active)
+ *   - coding_rules: cpt_code, (rule_type, is_active)
+ *
+ * Functions & Triggers:
+ *   - update_updated_at_column(): Trigger function to auto-update updated_at timestamp
+ *   - update_updated_at trigger on: payers, claims, denials, org_policies
+ */
 export async function up(pgm: MigrationBuilder): Promise<void> {
   // Enable UUID extension
   pgm.createExtension('uuid-ossp', { ifNotExists: true })
@@ -251,6 +273,15 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   })
 }
 
+/**
+ * Rolls back the initial schema migration.
+ *
+ * Drops (in order):
+ *   - Triggers: update_updated_at on payers, claims, denials, org_policies
+ *   - Functions: update_updated_at_column
+ *   - Tables: coding_rules, org_policies, denial_code_library, denials, claims, payers
+ *   - Extensions: uuid-ossp
+ */
 export async function down(pgm: MigrationBuilder): Promise<void> {
   // Drop triggers
   const tables = ['payers', 'claims', 'denials', 'org_policies']

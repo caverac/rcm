@@ -2,6 +2,32 @@ import type { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
+/**
+ * Adds the payment_variances table for tracking underpayments and overpayments.
+ *
+ * Table created:
+ *   - payment_variances: Tracks differences between expected and actual payments
+ *       Columns: id, claim_id, payer_id, expected_amount, actual_amount,
+ *                variance_amount, variance_percentage,
+ *                variance_type (underpayment, overpayment, expected),
+ *                variance_reason (contract_adjustment, bundling, non_covered_service,
+ *                 missing_authorization, credentialing_issue, coordination_of_benefits,
+ *                 incorrect_coding, timely_filing, duplicate_claim, other),
+ *                payment_date, reason_notes, requires_appeal, appeal_id,
+ *                resolved, resolution_date, resolution_notes, created_by
+ *
+ * Indexes created:
+ *   - payment_variances: claim_id, payer_id, variance_type, variance_reason,
+ *                        resolved, requires_appeal, payment_date,
+ *                        (payer_id, variance_type), (created_at, variance_type)
+ *
+ * Schema changes:
+ *   - claims: Added 'has_payment_variance' boolean and 'variance_count' integer columns
+ *
+ * Functions & Triggers:
+ *   - update_claim_payment_variance(): Auto-increments claims.variance_count and sets has_payment_variance=true
+ *   - update_payment_variances_updated_at trigger
+ */
 export async function up(pgm: MigrationBuilder): Promise<void> {
   // Create payment_variances table
   pgm.createTable('payment_variances', {
@@ -177,6 +203,15 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   )
 }
 
+/**
+ * Rolls back the payment_variances table migration.
+ *
+ * Drops:
+ *   - Triggers: update_claim_payment_variance_trigger, update_payment_variances_updated_at
+ *   - Functions: update_claim_payment_variance
+ *   - Columns: claims.has_payment_variance, claims.variance_count
+ *   - Tables: payment_variances
+ */
 export async function down(pgm: MigrationBuilder): Promise<void> {
   // Drop triggers first
   pgm.dropTrigger(

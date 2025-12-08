@@ -2,6 +2,27 @@ import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
+/**
+ * Adds the write_offs table for tracking written-off denial amounts.
+ *
+ * Table created:
+ *   - write_offs: Tracks amounts written off from denials
+ *       Columns: id, denial_id, claim_id, write_off_amount, write_off_reason
+ *                (below_threshold, timely_filing_expired, non_covered_service, patient_responsibility,
+ *                 contract_adjustment, uncollectible, other),
+ *                reason_notes, approved_by, approval_date, category, is_preventable
+ *
+ * Indexes created:
+ *   - write_offs: denial_id, claim_id, write_off_reason, category, is_preventable,
+ *                 approval_date, (category, is_preventable)
+ *
+ * Schema changes:
+ *   - denials: Added 'written_off' boolean and 'write_off_date' timestamp columns
+ *
+ * Functions & Triggers:
+ *   - update_denial_written_off(): Auto-sets denials.written_off=true and resolution_status='abandoned'
+ *   - update_updated_at trigger on write_offs
+ */
 export async function up(pgm: MigrationBuilder): Promise<void> {
   // Write-offs table for tracking denied amounts that are written off
   pgm.createTable('write_offs', {
@@ -126,6 +147,15 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   })
 }
 
+/**
+ * Rolls back the write_offs table migration.
+ *
+ * Drops:
+ *   - Triggers: update_denial_written_off_trigger, update_updated_at on write_offs
+ *   - Functions: update_denial_written_off
+ *   - Columns: denials.written_off, denials.write_off_date
+ *   - Tables: write_offs
+ */
 export async function down(pgm: MigrationBuilder): Promise<void> {
   // Drop triggers
   pgm.dropTrigger('write_offs', 'update_denial_written_off_trigger', {
