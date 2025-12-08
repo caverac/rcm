@@ -29,9 +29,52 @@ import { updatePaymentVariance } from './tools/update-payment-variance.js'
 import { listPaymentVariances } from './tools/list-payment-variances.js'
 import { getPaymentVarianceAnalytics } from './tools/get-payment-variance-analytics.js'
 import { tools } from './tool-schemas.js'
+import type {
+  NormalizeClaimInput,
+  ClassifyDenialInput,
+  SuggestNextActionInput,
+  BatchClassifyDenialsInput,
+  CreateAppealInput,
+  UpdateAppealInput,
+  ListAppealsInput,
+  CreateWriteOffInput,
+  ListWriteOffsInput,
+  CreateRebillInput,
+  UpdateRebillInput,
+  ListRebillsInput,
+  CreatePaymentVarianceInput,
+  UpdatePaymentVarianceInput,
+  ListPaymentVariancesInput,
+  ClaimStatus,
+} from '@rcm/shared-types'
+import type { AuditCodingInput } from './types.js'
 
-// In-memory fallback for when database is not available
-const inMemoryClaims = new Map<string, any>()
+// Helper to create error response
+function errorResponse(message: string) {
+  return {
+    content: [{ type: 'text' as const, text: JSON.stringify({ error: message }, null, 2) }],
+    isError: true,
+  }
+}
+
+// Helper to create success response
+function successResponse(data: unknown) {
+  return {
+    content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }],
+  }
+}
+
+// Helper to check database and return error if not available
+async function requireDatabase(): Promise<{ available: true } | { available: false; response: ReturnType<typeof errorResponse> }> {
+  const dbAvailable = await isDatabaseAvailable()
+  if (!dbAvailable) {
+    return {
+      available: false,
+      response: errorResponse('Database not available. Set DATABASE_URL environment variable.'),
+    }
+  }
+  return { available: true }
+}
 
 const server = new Server(
   {
@@ -53,817 +96,179 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params
 
   try {
-    // Check database availability for database-dependent tools
-    const dbAvailable = await isDatabaseAvailable()
+    // All tools require database
+    const dbCheck = await requireDatabase()
+    if (!dbCheck.available) {
+      return dbCheck.response
+    }
+
+    // Cast args to unknown first to allow proper type assertions
+    const toolArgs = args as unknown
 
     switch (name) {
       case 'normalize_claim': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await normalizeClaim(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as NormalizeClaimInput
+        const result = await normalizeClaim(input)
+        return successResponse(result)
       }
 
       case 'classify_denial': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await classifyDenial(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as ClassifyDenialInput
+        const result = await classifyDenial(input)
+        return successResponse(result)
       }
 
       case 'suggest_next_action': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await suggestNextAction(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as SuggestNextActionInput
+        const result = await suggestNextAction(input)
+        return successResponse(result)
       }
 
       case 'batch_classify_denials': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await batchClassifyDenials(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as BatchClassifyDenialsInput
+        const result = await batchClassifyDenials(input)
+        return successResponse(result)
       }
 
       case 'audit_coding': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await auditCoding(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as AuditCodingInput
+        const result = await auditCoding(input)
+        return successResponse(result)
       }
 
       case 'create_appeal': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await createAppeal(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as CreateAppealInput
+        const result = await createAppeal(input)
+        return successResponse(result)
       }
 
       case 'update_appeal': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await updateAppeal(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as UpdateAppealInput
+        const result = await updateAppeal(input)
+        return successResponse(result)
       }
 
       case 'list_appeals': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await listAppeals(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as ListAppealsInput
+        const result = await listAppeals(input)
+        return successResponse(result)
       }
 
       case 'get_appeal_analytics': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
         const result = await getAppealAnalytics()
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        return successResponse(result)
       }
 
       case 'create_write_off': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await createWriteOff(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as CreateWriteOffInput
+        const result = await createWriteOff(input)
+        return successResponse(result)
       }
 
       case 'list_write_offs': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await listWriteOffs(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as ListWriteOffsInput
+        const result = await listWriteOffs(input)
+        return successResponse(result)
       }
 
       case 'get_write_off_analytics': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
         const result = await getWriteOffAnalytics()
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        return successResponse(result)
       }
 
       case 'create_rebill': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await createRebill(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as CreateRebillInput
+        const result = await createRebill(input)
+        return successResponse(result)
       }
 
       case 'update_rebill': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await updateRebill(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as UpdateRebillInput
+        const result = await updateRebill(input)
+        return successResponse(result)
       }
 
       case 'list_rebills': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await listRebills(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as ListRebillsInput
+        const result = await listRebills(input)
+        return successResponse(result)
       }
 
       case 'get_rebill_analytics': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
         const result = await getRebillAnalytics()
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        return successResponse(result)
       }
 
       case 'create_payment_variance': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await createPaymentVariance(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as CreatePaymentVarianceInput
+        const result = await createPaymentVariance(input)
+        return successResponse(result)
       }
 
       case 'update_payment_variance': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await updatePaymentVariance(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as UpdatePaymentVarianceInput
+        const result = await updatePaymentVariance(input)
+        return successResponse(result)
       }
 
       case 'list_payment_variances': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
-        const result = await listPaymentVariances(args as any)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        const input = toolArgs as ListPaymentVariancesInput
+        const result = await listPaymentVariances(input)
+        return successResponse(result)
       }
 
       case 'get_payment_variance_analytics': {
-        if (!dbAvailable) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(
-                  {
-                    error:
-                      'Database not available. Set DATABASE_URL environment variable.',
-                  },
-                  null,
-                  2
-                ),
-              },
-            ],
-            isError: true,
-          }
-        }
         const result = await getPaymentVarianceAnalytics()
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        }
+        return successResponse(result)
       }
 
-      // Legacy tools (in-memory or database)
+      // Legacy tools
       case 'create_claim': {
-        const { patientId, amount } = args as {
-          patientId: string
-          amount: number
-        }
+        const { patientId, amount } = toolArgs as { patientId: string; amount: number }
         const claimId = `CLM-${Date.now()}`
-
-        if (dbAvailable) {
-          // Use database
-          const result = await query(
-            `INSERT INTO claims (claim_id, patient_id, status, amount)
-             VALUES ($1, $2, $3, $4) RETURNING *`,
-            [claimId, patientId, 'pending', amount]
-          )
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(result[0], null, 2),
-              },
-            ],
-          }
-        } else {
-          // Use in-memory
-          const claim = {
-            claimId,
-            patientId,
-            amount,
-            status: 'pending',
-          }
-          inMemoryClaims.set(claimId, claim)
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(claim, null, 2),
-              },
-            ],
-          }
-        }
+        const result = await query(
+          `INSERT INTO claims (claim_id, patient_id, status, amount)
+           VALUES ($1, $2, $3, $4) RETURNING *`,
+          [claimId, patientId, 'pending', amount]
+        )
+        return successResponse(result[0])
       }
 
       case 'get_claim': {
-        const { claimId } = args as { claimId: string }
-
-        if (dbAvailable) {
-          const result = await query(
-            'SELECT * FROM claims WHERE claim_id = $1',
-            [claimId]
-          )
-          if (result.length === 0) {
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: JSON.stringify({ error: 'Claim not found' }),
-                },
-              ],
-              isError: true,
-            }
-          }
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(result[0], null, 2),
-              },
-            ],
-          }
-        } else {
-          const claim = inMemoryClaims.get(claimId)
-          if (!claim) {
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: JSON.stringify({ error: 'Claim not found' }),
-                },
-              ],
-              isError: true,
-            }
-          }
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(claim, null, 2),
-              },
-            ],
-          }
+        const { claimId } = toolArgs as { claimId: string }
+        const result = await query('SELECT * FROM claims WHERE claim_id = $1', [claimId])
+        if (result.length === 0) {
+          return errorResponse('Claim not found')
         }
+        return successResponse(result[0])
       }
 
       case 'update_claim_status': {
-        const { claimId, status } = args as { claimId: string; status: string }
-
-        if (dbAvailable) {
-          const result = await query(
-            'UPDATE claims SET status = $1, updated_at = now() WHERE claim_id = $2 RETURNING *',
-            [status, claimId]
-          )
-          if (result.length === 0) {
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: JSON.stringify({ error: 'Claim not found' }),
-                },
-              ],
-              isError: true,
-            }
-          }
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(result[0], null, 2),
-              },
-            ],
-          }
-        } else {
-          const claim = inMemoryClaims.get(claimId)
-          if (!claim) {
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: JSON.stringify({ error: 'Claim not found' }),
-                },
-              ],
-              isError: true,
-            }
-          }
-          claim.status = status
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(claim, null, 2),
-              },
-            ],
-          }
+        const { claimId, status } = toolArgs as { claimId: string; status: ClaimStatus }
+        const result = await query(
+          'UPDATE claims SET status = $1, updated_at = now() WHERE claim_id = $2 RETURNING *',
+          [status, claimId]
+        )
+        if (result.length === 0) {
+          return errorResponse('Claim not found')
         }
+        return successResponse(result[0])
       }
 
       case 'list_claims': {
-        const { patientId } = (args as { patientId?: string }) || {}
-
-        if (dbAvailable) {
-          const result = patientId
-            ? await query('SELECT * FROM claims WHERE patient_id = $1', [
-                patientId,
-              ])
-            : await query(
-                'SELECT * FROM claims ORDER BY created_at DESC LIMIT 100'
-              )
-
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(result, null, 2),
-              },
-            ],
-          }
-        } else {
-          let claimsList = Array.from(inMemoryClaims.values())
-          if (patientId) {
-            claimsList = claimsList.filter((c) => c.patientId === patientId)
-          }
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(claimsList, null, 2),
-              },
-            ],
-          }
-        }
+        const { patientId } = (toolArgs as { patientId?: string }) || {}
+        const result = patientId
+          ? await query('SELECT * FROM claims WHERE patient_id = $1', [patientId])
+          : await query('SELECT * FROM claims ORDER BY created_at DESC LIMIT 100')
+        return successResponse(result)
       }
 
       default:
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify({ error: `Unknown tool: ${name}` }),
-            },
-          ],
-          isError: true,
-        }
+        return errorResponse(`Unknown tool: ${name}`)
     }
   } catch (error) {
     console.error(`Error in ${name}:`, error)
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify({
-            error: error instanceof Error ? error.message : 'Unknown error',
-            tool: name,
-          }),
-        },
-      ],
-      isError: true,
-    }
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error')
   }
 })
 
@@ -877,7 +282,7 @@ async function main() {
     console.error('RCM MCP Server v2.0 running on stdio (PostgreSQL connected)')
   } else {
     console.error(
-      'RCM MCP Server v2.0 running on stdio (in-memory mode - set DATABASE_URL for full functionality)'
+      'Warning: Database not available. Set DATABASE_URL environment variable. All tools will return errors until database is connected.'
     )
   }
 }

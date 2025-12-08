@@ -22,14 +22,14 @@ import {
   UpdatePaymentVarianceInputSchema,
   ListPaymentVariancesInputSchema,
   // Enum schemas for reference
-  AppealTypeSchema,
-  AppealStatusSchema,
-  AppealPrioritySchema,
-  WriteOffReasonSchema,
-  RebillReasonSchema,
-  RebillStatusSchema,
-  VarianceTypeSchema,
-  VarianceReasonSchema,
+  // AppealTypeSchema,
+  // AppealStatusSchema,
+  // AppealPrioritySchema,
+  // WriteOffReasonSchema,
+  // RebillReasonSchema,
+  // RebillStatusSchema,
+  // VarianceTypeSchema,
+  // VarianceReasonSchema,
   ClaimStatusSchema,
 } from '@rcm/shared-types'
 import type { Tool } from '@modelcontextprotocol/sdk/types.js'
@@ -45,23 +45,33 @@ function toInputSchema(schema: z.ZodType): Tool['inputSchema'] {
 // Local schemas for tools not yet in shared-types
 const AuditCodingInputSchema = z.object({
   claim_data: z.object({
-    cpt_codes: z.array(
-      z.object({
-        code: z.string().describe('CPT code'),
-        modifiers: z.array(z.string()).optional().describe('Modifiers'),
-        units: z.number().optional().describe('Number of units'),
-      })
-    ).describe('CPT codes with optional modifiers'),
-    diagnosis_codes: z.array(
-      z.object({
-        code: z.string().describe('ICD-10 diagnosis code'),
-        pointer: z.number().optional().describe('Diagnosis pointer'),
-      })
-    ).describe('ICD-10 diagnosis codes'),
-    payer_id: z.string().optional().describe('Optional payer ID for payer-specific rules'),
+    cpt_codes: z
+      .array(
+        z.object({
+          code: z.string().describe('CPT code'),
+          modifiers: z.array(z.string()).optional().describe('Modifiers'),
+          units: z.number().optional().describe('Number of units'),
+        })
+      )
+      .describe('CPT codes with optional modifiers'),
+    diagnosis_codes: z
+      .array(
+        z.object({
+          code: z.string().describe('ICD-10 diagnosis code'),
+          pointer: z.number().optional().describe('Diagnosis pointer'),
+        })
+      )
+      .describe('ICD-10 diagnosis codes'),
+    payer_id: z
+      .string()
+      .optional()
+      .describe('Optional payer ID for payer-specific rules'),
     place_of_service: z.string().optional().describe('Place of service code'),
   }),
-  include_warnings: z.boolean().optional().describe('Include warning-level issues (default: true)'),
+  include_warnings: z
+    .boolean()
+    .optional()
+    .describe('Include warning-level issues (default: true)'),
 })
 
 // Legacy tool schemas
@@ -80,7 +90,10 @@ const UpdateClaimStatusInputSchema = z.object({
 })
 
 const ListClaimsInputSchema = z.object({
-  patientId: z.string().optional().describe('Optional patient ID to filter claims'),
+  patientId: z
+    .string()
+    .optional()
+    .describe('Optional patient ID to filter claims'),
 })
 
 // Empty schema for analytics tools
