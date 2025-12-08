@@ -1,71 +1,61 @@
-import {
-  Stack,
-  StackProps,
-  RemovalPolicy,
-  Duration,
-  CfnOutput,
-} from 'aws-cdk-lib'
+import { Stack, StackProps, RemovalPolicy, Duration } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
 import * as rds from 'aws-cdk-lib/aws-rds'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
-import * as s3 from 'aws-cdk-lib/aws-s3'
-import * as lambda from 'aws-cdk-lib/aws-lambda'
-import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager'
+import * as cr from 'aws-cdk-lib/custom-resources'
 
+/**
+ * RCM Infrastructure Stack
+ *
+ * Deploys a publicly accessible PostgreSQL RDS instance for the RCM MCP server.
+ * The MCP server runs locally and connects to this remote database.
+ *
+ * Connection details are stored in Secrets Manager at /rcm/db-credentials
+ *
+ * For demo/development use only. For production:
+ * - Use private subnets with VPN/bastion access
+ * - Enable deletion protection
+ * - Use larger instance types
+ * - Enable Multi-AZ
+ */
 export class RcmStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props)
 
-    // VPC for RDS
+    const dbName = 'rcmdb'
+    const dbUsername = 'rcm_admin'
+    const dbPort = 5432
+
+    // VPC with public subnets only (for publicly accessible RDS)
     const vpc = new ec2.Vpc(this, 'RcmVpc', {
       maxAzs: 2,
-      natGateways: 1,
+      natGateways: 0, // No NAT needed - saves ~$32/month
       subnetConfiguration: [
         {
           name: 'public',
           subnetType: ec2.SubnetType.PUBLIC,
           cidrMask: 24,
         },
-        {
-          name: 'private',
-          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-          cidrMask: 24,
-        },
-        {
-          name: 'isolated',
-          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
-          cidrMask: 24,
-        },
       ],
     })
 
-    // Security group for RDS
+    // Security group for RDS - allows PostgreSQL from anywhere
     const dbSecurityGroup = new ec2.SecurityGroup(this, 'DbSecurityGroup', {
       vpc,
       description: 'Security group for RCM PostgreSQL database',
       allowAllOutbound: true,
     })
 
-    // Security group for Lambda functions
-    const lambdaSecurityGroup = new ec2.SecurityGroup(
-      this,
-      'LambdaSecurityGroup',
-      {
-        vpc,
-        description: 'Security group for Lambda functions',
-        allowAllOutbound: true,
-      }
-    )
-
-    // Allow Lambda to connect to RDS
+    // Allow PostgreSQL connections from anywhere (for demo)
+    // In production, restrict to specific IP ranges
     dbSecurityGroup.addIngressRule(
-      lambdaSecurityGroup,
-      ec2.Port.tcp(5432),
-      'Allow Lambda to connect to PostgreSQL'
+      ec2.Peer.anyIpv4(),
+      ec2.Port.tcp(dbPort),
+      'Allow PostgreSQL from anywhere'
     )
 
-    // PostgreSQL RDS instance
+    // PostgreSQL RDS instance - publicly accessible
     const database = new rds.DatabaseInstance(this, 'RcmDatabase', {
       engine: rds.DatabaseInstanceEngine.postgres({
         version: rds.PostgresEngineVersion.VER_16,
@@ -76,139 +66,86 @@ export class RcmStack extends Stack {
       ),
       vpc,
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+        subnetType: ec2.SubnetType.PUBLIC,
       },
       securityGroups: [dbSecurityGroup],
-      databaseName: 'rcmdb',
-      credentials: rds.Credentials.fromGeneratedSecret('rcm_admin'),
+      databaseName: dbName,
+      credentials: rds.Credentials.fromGeneratedSecret(dbUsername),
       allocatedStorage: 20,
       maxAllocatedStorage: 100,
       storageEncrypted: true,
       backupRetention: Duration.days(7),
       deleteAutomatedBackups: true,
-      removalPolicy: RemovalPolicy.DESTROY, // Change for production
-      deletionProtection: false, // Change to true for production
-      publiclyAccessible: false,
+      removalPolicy: RemovalPolicy.DESTROY, // For demo - change for production
+      deletionProtection: false, // For demo - change to true for production
+      publiclyAccessible: true, // Direct connection for demo
       enablePerformanceInsights: true,
       performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
     })
 
-    // S3 bucket for document storage
-    const documentsBucket = new s3.Bucket(this, 'DocumentsBucket', {
-      versioned: true,
-      encryption: s3.BucketEncryption.S3_MANAGED,
-      removalPolicy: RemovalPolicy.DESTROY, // Change for production
-      autoDeleteObjects: true, // Change for production
-      lifecycleRules: [
-        {
-          transitions: [
-            {
-              storageClass: s3.StorageClass.INTELLIGENT_TIERING,
-              transitionAfter: Duration.days(90),
-            },
-          ],
+    // Create a custom secret with all connection details at /rcm/db-credentials
+    // We need to read the generated password from the RDS secret and create a new secret
+    // with all the connection details in a well-known location
+    const dbCredentialsSecret = new secretsmanager.Secret(
+      this,
+      'DbCredentialsSecret',
+      {
+        secretName: '/rcm/db-credentials',
+        description: 'RCM database connection credentials',
+        removalPolicy: RemovalPolicy.DESTROY,
+      }
+    )
+
+    // Use a custom resource to populate the secret with connection details
+    // after the RDS instance is created
+    const populateSecret = new cr.AwsCustomResource(this, 'PopulateDbSecret', {
+      onCreate: {
+        service: 'SecretsManager',
+        action: 'putSecretValue',
+        parameters: {
+          SecretId: dbCredentialsSecret.secretArn,
+          SecretString: JSON.stringify({
+            host: database.dbInstanceEndpointAddress,
+            port: dbPort,
+            dbname: dbName,
+            username: dbUsername,
+            // Reference the password from the RDS-generated secret
+            password: database.secret
+              ?.secretValueFromJson('password')
+              .unsafeUnwrap(),
+            // Convenience: full connection string
+            connection_string: `postgresql://${dbUsername}:${database.secret?.secretValueFromJson('password').unsafeUnwrap()}@${database.dbInstanceEndpointAddress}:${dbPort}/${dbName}`,
+          }),
         },
-      ],
-    })
-
-    // Lambda function placeholder for claims processing
-    const claimsProcessor = new lambda.Function(this, 'ClaimsProcessor', {
-      runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromInline(`
-        exports.handler = async (event) => {
-          console.log('Event:', JSON.stringify(event, null, 2));
-          return {
-            statusCode: 200,
-            body: JSON.stringify({ message: 'Claims processor placeholder' }),
-          };
-        };
-      `),
-      vpc,
-      vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        physicalResourceId: cr.PhysicalResourceId.of('rcm-db-credentials'),
       },
-      securityGroups: [lambdaSecurityGroup],
-      environment: {
-        DATABASE_SECRET_ARN: database.secret?.secretArn || '',
-        DB_NAME: 'rcmdb',
-        DOCUMENTS_BUCKET_NAME: documentsBucket.bucketName,
+      onUpdate: {
+        service: 'SecretsManager',
+        action: 'putSecretValue',
+        parameters: {
+          SecretId: dbCredentialsSecret.secretArn,
+          SecretString: JSON.stringify({
+            host: database.dbInstanceEndpointAddress,
+            port: dbPort,
+            dbname: dbName,
+            username: dbUsername,
+            password: database.secret
+              ?.secretValueFromJson('password')
+              .unsafeUnwrap(),
+            connection_string: `postgresql://${dbUsername}:${database.secret?.secretValueFromJson('password').unsafeUnwrap()}@${database.dbInstanceEndpointAddress}:${dbPort}/${dbName}`,
+          }),
+        },
+        physicalResourceId: cr.PhysicalResourceId.of('rcm-db-credentials'),
       },
-      timeout: Duration.seconds(30),
+      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+        resources: [dbCredentialsSecret.secretArn],
+      }),
     })
 
-    // Grant permissions
-    database.secret?.grantRead(claimsProcessor)
-    documentsBucket.grantReadWrite(claimsProcessor)
+    // Ensure the custom resource runs after the database is created
+    populateSecret.node.addDependency(database)
 
-    // API Gateway
-    const api = new apigateway.RestApi(this, 'RcmApi', {
-      restApiName: 'Revenue Cycle Management API',
-      description: 'API for RCM operations',
-    })
-
-    const claimsResource = api.root.addResource('claims')
-    claimsResource.addMethod(
-      'POST',
-      new apigateway.LambdaIntegration(claimsProcessor)
-    )
-    claimsResource.addMethod(
-      'GET',
-      new apigateway.LambdaIntegration(claimsProcessor)
-    )
-
-    const claimResource = claimsResource.addResource('{claimId}')
-    claimResource.addMethod(
-      'GET',
-      new apigateway.LambdaIntegration(claimsProcessor)
-    )
-    claimResource.addMethod(
-      'PUT',
-      new apigateway.LambdaIntegration(claimsProcessor)
-    )
-
-    // CloudFormation Outputs
-    new CfnOutput(this, 'DatabaseEndpoint', {
-      value: database.dbInstanceEndpointAddress,
-      description: 'RDS PostgreSQL endpoint',
-      exportName: 'RcmDatabaseEndpoint',
-    })
-
-    new CfnOutput(this, 'DatabasePort', {
-      value: database.dbInstanceEndpointPort,
-      description: 'RDS PostgreSQL port',
-      exportName: 'RcmDatabasePort',
-    })
-
-    new CfnOutput(this, 'DatabaseName', {
-      value: 'rcmdb',
-      description: 'Database name',
-      exportName: 'RcmDatabaseName',
-    })
-
-    new CfnOutput(this, 'DatabaseSecretArn', {
-      value: database.secret?.secretArn || '',
-      description: 'Secret ARN for database credentials',
-      exportName: 'RcmDatabaseSecretArn',
-    })
-
-    new CfnOutput(this, 'DocumentsBucketName', {
-      value: documentsBucket.bucketName,
-      description: 'S3 bucket for document storage',
-      exportName: 'RcmDocumentsBucketName',
-    })
-
-    new CfnOutput(this, 'ApiEndpoint', {
-      value: api.url,
-      description: 'API Gateway endpoint',
-      exportName: 'RcmApiEndpoint',
-    })
-
-    new CfnOutput(this, 'DatabaseConnectionString', {
-      value: `postgresql://\${SECRET}@${database.dbInstanceEndpointAddress}:${database.dbInstanceEndpointPort}/rcmdb`,
-      description:
-        'Database connection string (replace ${SECRET} with credentials from Secrets Manager)',
-      exportName: 'RcmDatabaseConnectionTemplate',
-    })
+    // Grant the custom resource permission to read the RDS secret
+    database.secret?.grantRead(populateSecret)
   }
 }
