@@ -1,10 +1,11 @@
 import type { Client } from 'pg'
+import type { PayerSeed } from '@rcm/shared-types'
 import { logger } from '../utils/logger.js'
 
 export async function seedPayers(client: Client): Promise<void> {
   logger.info('Seeding payers...')
 
-  const payers = [
+  const payers: PayerSeed[] = [
     {
       id: '550e8400-e29b-41d4-a716-446655440000',
       payer_id: 'BCBS-CA-001',

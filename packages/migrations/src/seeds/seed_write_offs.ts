@@ -1,10 +1,11 @@
 import type { Client } from 'pg'
+import type { WriteOffSeed } from '@rcm/shared-types'
 import { logger } from '../utils/logger.js'
 
 export async function seedWriteOffs(client: Client): Promise<void> {
   logger.info('Seeding write-offs...')
 
-  const writeOffs = [
+  const writeOffs: WriteOffSeed[] = [
     // Small balance write-off for PR-1 denial
     {
       id: '950e8400-e29b-41d4-a716-446655440001',

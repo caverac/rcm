@@ -1,10 +1,11 @@
 import type { Client } from 'pg'
+import type { RebillSeed } from '@rcm/shared-types'
 import { logger } from '../utils/logger.js'
 
 export async function seedRebills(client: Client): Promise<void> {
   logger.info('Seeding rebills...')
 
-  const rebills = [
+  const rebills: RebillSeed[] = [
     // Rebill for CO-4 modifier error - successfully paid
     {
       id: 'a50e8400-e29b-41d4-a716-446655440001',

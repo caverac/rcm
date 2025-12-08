@@ -1,10 +1,11 @@
 import type { Client } from 'pg'
+import type { AppealSeed } from '@rcm/shared-types'
 import { logger } from '../utils/logger.js'
 
 export async function seedAppeals(client: Client): Promise<void> {
   logger.info('Seeding appeals...')
 
-  const appeals = [
+  const appeals: AppealSeed[] = [
     // First-level appeal for CO-197 authorization denial
     {
       id: '850e8400-e29b-41d4-a716-446655440001',

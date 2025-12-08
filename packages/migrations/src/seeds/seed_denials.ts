@@ -1,10 +1,11 @@
 import type { Client } from 'pg'
+import type { DenialSeed } from '@rcm/shared-types'
 import { logger } from '../utils/logger.js'
 
 export async function seedDenials(client: Client): Promise<void> {
   logger.info('Seeding denials...')
 
-  const denials = [
+  const denials: DenialSeed[] = [
     // CO-197: Missing prior authorization denial (will be appealed)
     {
       id: '750e8400-e29b-41d4-a716-446655440001',

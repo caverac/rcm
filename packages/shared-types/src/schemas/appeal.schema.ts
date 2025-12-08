@@ -60,7 +60,7 @@ export const CreateAppealInputSchema = z.object({
   appeal_type: AppealTypeSchema.default('first_level'),
   priority: AppealPrioritySchema.default('medium'),
   appeal_amount: z.number().positive(),
-  due_date: z.coerce.date().optional(),
+  due_date: z.string().optional().describe('Due date for the appeal (ISO 8601 format)'),
   appeal_reason: z
     .string()
     .min(10, 'Appeal reason must be at least 10 characters'),
@@ -110,3 +110,34 @@ export const AppealAnalyticsSchema = z.object({
 })
 
 export type AppealAnalytics = z.infer<typeof AppealAnalyticsSchema>
+
+// Supporting Document Seed Schema
+export const SupportingDocumentSeedSchema = z.object({
+  type: z.string(),
+  filename: z.string(),
+  uploaded_at: z.string(),
+})
+
+export type SupportingDocumentSeed = z.infer<typeof SupportingDocumentSeedSchema>
+
+// Appeal Seed Schema (for inserting seed data with string dates)
+export const AppealSeedSchema = z.object({
+  id: z.string().uuid(),
+  denial_id: z.string().uuid(),
+  claim_id: z.string().uuid(),
+  appeal_type: AppealTypeSchema,
+  status: AppealStatusSchema,
+  priority: AppealPrioritySchema,
+  appeal_amount: z.number().positive(),
+  filed_date: z.string().optional(), // String for seed data
+  due_date: z.string().optional(), // String for seed data
+  decision_date: z.string().optional(), // String for seed data
+  approved_amount: z.number().nonnegative().optional(),
+  appeal_reason: z.string().optional(),
+  supporting_documents: z.array(SupportingDocumentSeedSchema).optional(),
+  notes: z.string().optional(),
+  assigned_to: z.string().optional(),
+  payer_response: z.string().optional(),
+})
+
+export type AppealSeed = z.infer<typeof AppealSeedSchema>

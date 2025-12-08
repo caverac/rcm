@@ -58,7 +58,7 @@ export const DenialSchema = z.object({
   action_date: z.coerce.date().optional().nullable(),
   resolution_status: ResolutionStatusSchema.default('pending'),
   recovered_amount: z.number().nonnegative().optional().nullable(),
-  raw_data: z.record(z.any()).optional(),
+  raw_data: z.record(z.string(), z.any()).optional(),
   created_at: z.coerce.date().optional(),
   updated_at: z.coerce.date().optional(),
 })
@@ -83,7 +83,7 @@ export type DenialCodeLibrary = z.infer<typeof DenialCodeLibrarySchema>
 export const ClassifyDenialInputSchema = z.object({
   denial_code: z.string().min(1),
   denial_text: z.string().optional(),
-  claim_data: z.record(z.any()).optional(),
+  claim_data: z.record(z.string(), z.any()).optional(),
 })
 
 export type ClassifyDenialInput = z.infer<typeof ClassifyDenialInputSchema>
@@ -91,7 +91,7 @@ export type ClassifyDenialInput = z.infer<typeof ClassifyDenialInputSchema>
 // Denial Classification Output Schema
 export const DenialClassificationSchema = z.object({
   code: z.string(),
-  category: DenialCategorySchema,
+  category: z.string(), // Flexible to handle any category string
   description: z.string(),
   is_appealable: z.boolean(),
   common_resolution: z.string(),
@@ -161,3 +161,27 @@ export const DenialAnalyticsSchema = z.object({
 })
 
 export type DenialAnalytics = z.infer<typeof DenialAnalyticsSchema>
+
+// Denial Seed Schema (for inserting seed data with string dates)
+export const DenialSeedSchema = z.object({
+  id: z.string().uuid(),
+  claim_id: z.string().uuid(),
+  denial_code: z.string(),
+  denial_category: z.string().optional(),
+  denial_reason: z.string().optional(),
+  denial_amount: z.number().positive(),
+  denial_date: z.string(), // String for seed data
+  is_preventable: z.boolean(),
+  root_cause: z.string().optional(),
+  resolution_status: ResolutionStatusSchema.optional(),
+  action_taken: DenialActionSchema.optional(),
+  action_date: z.string().optional(), // String for seed data
+  recovered_amount: z.number().nonnegative().optional(),
+  appealed: z.boolean().optional(),
+  written_off: z.boolean().optional(),
+  write_off_date: z.string().optional(), // String for seed data
+  rebilled: z.boolean().optional(),
+  rebill_date: z.string().optional(), // String for seed data
+})
+
+export type DenialSeed = z.infer<typeof DenialSeedSchema>

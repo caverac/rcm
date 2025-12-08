@@ -1,443 +1,187 @@
+---
+sidebar_position: 4
+---
+
 # Appeals Management
 
-The Appeals Management workflow (Flow E) helps you manage the complete appeal lifecycle for denied claims, track appeal status, and analyze appeal success rates.
+Track appeal lifecycle from filing to resolution with automatic status updates.
 
 ## Overview
 
-When claims are denied, you may need to appeal the decision to recover revenue. This workflow provides tools to:
+When claims are denied, you may need to appeal the decision to recover revenue. This workflow provides tools to create, track, and analyze appeals.
 
-- Create and track appeals for denied claims
-- Update appeal status as it progresses through payer review
-- Monitor overdue appeals and prioritize work
-- Analyze appeal success rates and recovery amounts
+## Tools Used
 
-## Prerequisites
+| Tool | Purpose |
+|------|---------|
+| `create_appeal` | Create appeal for a denied claim |
+| `update_appeal` | Update status, decision, payer response |
+| `list_appeals` | Query appeals with filters |
+| `get_appeal_analytics` | Success rates and recovery metrics |
 
-- Denied claim records in the database
-- Appeal reason documentation
-- Supporting documents for the appeal
+## Example: Working with Seeded Appeals
 
-## Workflow Steps
+The database contains 2 seeded appeals:
 
-### 1. Create an Appeal
+| Appeal | Denial | Claim | Amount | Status | Priority |
+|--------|--------|-------|--------|--------|----------|
+| 850e8400...001 | CO-197 | CLM-2024-001235 | $500 | submitted | high |
+| 850e8400...002 | CO-50 | CLM-2024-001235 | $500 | pending | medium |
 
-When you receive a denial that should be appealed, create an appeal record:
+### Check Appeal Status
 
-```typescript
-const result = await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'create_appeal',
-  arguments: {
-    denial_id: '123e4567-e89b-12d3-a456-426614174000',
-    claim_id: '123e4567-e89b-12d3-a456-426614174001',
-    appeal_amount: 500.0,
-    appeal_reason:
-      'Authorization was obtained prior to service date. Attached documentation shows pre-authorization approval dated 2024-01-10.',
-    priority: 'high',
-    due_date: '2024-02-15',
-    supporting_documents: [
-      'pre-auth-approval-2024-01-10.pdf',
-      'medical-records-patient-12345.pdf',
-    ],
-    assigned_to: 'Appeals Team',
-  },
-})
+**User prompt:**
+
+```
+Show me the status of our appeals and check if any are overdue.
 ```
 
 **What happens:**
 
-- Appeal record is created with status "pending"
-- Claim status is automatically updated to "appealed"
-- Denial record is updated with action_taken = "appeal"
-- Due date helps track timely filing requirements
-
-### 2. Update Appeal Status
-
-As the appeal progresses, update its status:
-
-```typescript
-// When you submit the appeal to the payer
-await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'update_appeal',
-  arguments: {
-    appeal_id: 'appeal-uuid',
-    status: 'submitted',
-    filed_date: '2024-01-20',
-    notes: 'Appeal submitted via payer portal. Confirmation #AP-2024-12345',
-  },
-})
-
-// When you receive a decision
-await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'update_appeal',
-  arguments: {
-    appeal_id: 'appeal-uuid',
-    status: 'approved',
-    decision_date: '2024-02-10',
-    approved_amount: 450.0,
-    payer_response:
-      'Appeal approved. Authorization requirement waived due to emergency services. Check mailed 2/15/2024.',
-  },
-})
-```
-
-**Status lifecycle:**
-
-1. **pending** - Appeal created but not yet worked
-2. **in_progress** - Gathering documents and preparing appeal
-3. **submitted** - Sent to payer
-4. **under_review** - Payer is reviewing
-5. **approved** - Appeal won (full approval)
-6. **partially_approved** - Partial recovery
-7. **denied** - Appeal lost
-8. **withdrawn** - Appeal cancelled
-
-**What happens on approval:**
-
-- Denial is automatically marked as "resolved"
-- Recovered amount is tracked
-- Success metrics are updated
-
-### 3. Monitor Active Appeals
-
-List appeals that need attention:
-
-```typescript
-// Get all high-priority pending appeals
-const pendingAppeals = await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'list_appeals',
-  arguments: {
-    status: 'pending',
-    priority: 'high',
-  },
-})
-
-// Find overdue appeals
-const overdueAppeals = await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'list_appeals',
-  arguments: {
-    overdue_only: true,
-  },
-})
-
-// Get appeals for specific team member
-const myAppeals = await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'list_appeals',
-  arguments: {
-    assigned_to: 'Jane Smith',
-    status: 'in_progress',
-  },
-})
-```
-
-**Results are sorted by:**
-
-1. Priority (high → medium → low)
-2. Due date (earliest first)
-3. Created date (most recent first)
-
-### 4. Analyze Appeal Performance
-
-Get comprehensive analytics on your appeals:
-
-```typescript
-const analytics = await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'get_appeal_analytics',
-  arguments: {},
-})
-```
-
-**Example response:**
+The `list_appeals` tool retrieves appeals from the database:
 
 ```json
 {
-  "total_appeals": 150,
-  "total_amount": 75000.0,
-  "total_approved_amount": 52500.0,
-  "success_rate": 70.0,
-  "average_days_to_decision": 18.5,
+  "appeals": [
+    {
+      "id": "850e8400-e29b-41d4-a716-446655440001",
+      "denial_id": "750e8400-e29b-41d4-a716-446655440001",
+      "claim_id": "650e8400-e29b-41d4-a716-446655440002",
+      "appeal_type": "first_level",
+      "status": "submitted",
+      "priority": "high",
+      "appeal_amount": 500.00,
+      "filed_date": "2024-01-20",
+      "due_date": "2024-02-20",
+      "appeal_reason": "Authorization was obtained prior to service - see attached documentation",
+      "assigned_to": "Jane Smith"
+    },
+    {
+      "id": "850e8400-e29b-41d4-a716-446655440002",
+      "appeal_type": "first_level",
+      "status": "pending",
+      "priority": "medium",
+      "appeal_amount": 500.00,
+      "due_date": "2024-02-25",
+      "appeal_reason": "Medical necessity supported by clinical documentation - MRI indicated for persistent headaches",
+      "assigned_to": "John Doe"
+    }
+  ],
+  "total": 2
+}
+```
+
+**Expected Response:**
+
+> You have 2 appeals totaling $1,000:
+>
+> 1. **CO-197 Authorization Appeal** (High Priority)
+>    - Status: Submitted on 1/20/2024
+>    - Due: 2/20/2024
+>    - Assigned to: Jane Smith
+>    - Reason: Authorization documentation was obtained prior to service
+>
+> 2. **CO-50 Medical Necessity Appeal** (Medium Priority)
+>    - Status: Pending (not yet submitted)
+>    - Due: 2/25/2024
+>    - Assigned to: John Doe
+>    - Needs: Clinical documentation for MRI
+
+### Update Appeal Decision
+
+**User prompt:**
+
+```
+The first appeal was approved for $450. Update it.
+```
+
+**What happens:**
+
+The `update_appeal` tool updates the appeal:
+
+```json
+{
+  "appeal_id": "850e8400-e29b-41d4-a716-446655440001",
+  "status": "approved",
+  "decision_date": "2024-02-15",
+  "approved_amount": 450.00,
+  "payer_response": "Appeal approved. Authorization requirement waived."
+}
+```
+
+**System automatically:**
+- Updates denial resolution_status to "resolved"
+- Sets denial recovered_amount to $450
+- Updates claim status
+
+## Appeal Lifecycle
+
+```mermaid
+graph LR
+    A[pending] --> B[in_progress]
+    B --> C[submitted]
+    C --> D[under_review]
+    D --> E{Decision}
+    E -->|Won| F[approved]
+    E -->|Partial| G[partially_approved]
+    E -->|Lost| H[denied]
+    B --> I[withdrawn]
+
+    style F fill:#d4edda
+    style G fill:#fff4e1
+    style H fill:#f8d7da
+```
+
+## Appeal Analytics
+
+**User prompt:**
+
+```
+How are our appeals performing?
+```
+
+The `get_appeal_analytics` tool returns:
+
+```json
+{
+  "total_appeals": 2,
+  "total_amount": 1000.00,
   "by_status": {
-    "pending": 25,
-    "in_progress": 15,
-    "submitted": 20,
-    "under_review": 10,
-    "approved": 65,
-    "denied": 10,
-    "partially_approved": 5
+    "submitted": 1,
+    "pending": 1
   },
   "by_priority": {
-    "high": 45,
-    "medium": 85,
-    "low": 20
+    "high": 1,
+    "medium": 1
   },
-  "overdue_count": 8,
+  "overdue_count": 0,
   "insights": [
-    "Overall appeal success rate: 70.0%",
-    "Recovery rate: 70.0% ($52500.00 of $75000.00)",
-    "⚠️ 8 appeals are overdue and requires immediate attention",
-    "45 high-priority appeals in queue",
-    "Average time to decision: 18.5 days"
+    "2 appeals in queue totaling $1,000",
+    "1 high-priority appeal requires attention",
+    "No overdue appeals"
   ]
 }
 ```
 
-**Use analytics to:**
-
-- Track team performance
-- Identify improvement opportunities
-- Forecast revenue recovery
-- Report to stakeholders
-
 ## Best Practices
 
-### Appeal Prioritization
+### Priority Assignment
 
-Set priority based on:
-
-- **High**: Large dollar amounts ($1000+), timely filing deadlines soon, likely to win
-- **Medium**: Moderate amounts ($100-$1000), reasonable timeframes
-- **Low**: Small amounts (under $100), low win probability
-
-### Documentation Requirements
-
-Include these in your appeal reason:
-
-- Specific denial reason you're contesting
-- Why the denial is incorrect
-- Supporting evidence (pre-auth, medical necessity, coding references)
-- Relevant payer policy sections
-
-Example:
-
-```
-"Claim denied CO-197 for missing authorization. However, pre-authorization
-#PA-2024-12345 was obtained on 1/15/2024 prior to service date of 1/20/2024.
-Attached: (1) Pre-auth approval letter, (2) Verification of benefits showing
-auth on file. Per payer policy section 4.2.1, services rendered within 60 days
-of authorization approval are covered."
-```
+- **High**: Amount over $500, timely filing deadline soon, strong documentation
+- **Medium**: Amount $100-$500, reasonable timeframe
+- **Low**: Amount under $100, low win probability
 
 ### Due Date Management
 
 Set due dates based on payer timely filing limits:
-
-- **First level appeals**: Typically 180 days from denial
-- **Second level appeals**: 30-60 days from first level denial
+- **First level**: Typically 180 days from denial
+- **Second level**: 30-60 days from first level denial
 - **External review**: 30 days from second level denial
 
-**Pro tip:** Set due dates 15-30 days before actual deadline to allow time for unexpected delays.
-
-### Status Updates
-
-Update status regularly:
-
-- When documents are gathered → `in_progress`
-- When submitted to payer → `submitted` (record filed_date)
-- When payer acknowledges → `under_review`
-- When decision received → `approved`/`denied`/`partially_approved` (record decision_date and amounts)
-
-## Common Scenarios
-
-### Scenario 1: Mass Appeal for Coding Denial
-
-If a payer denied multiple claims for the same coding issue:
-
-```typescript
-// First, find all related denials
-const denials = await use_mcp_tool({
-  server_name: "rcm-mcp-server",
-  tool_name: "batch_classify_denials",
-  arguments: {
-    denials: [...], // Your denials
-    group_by: "code"
-  }
-});
-
-// Create appeals for CO-4 (modifier issue) denials
-for (const denial of denials.groups.find(g => g.group_key === "CO-4").denials) {
-  await use_mcp_tool({
-    server_name: "rcm-mcp-server",
-    tool_name: "create_appeal",
-    arguments: {
-      denial_id: denial.id,
-      claim_id: denial.claim_id,
-      appeal_amount: denial.amount,
-      appeal_reason: "Modifier -25 was appropriately appended per CPT guidelines...",
-      priority: "medium"
-    }
-  });
-}
-```
-
-### Scenario 2: Expedited Appeal
-
-For urgent cases (e.g., ongoing treatment denied):
-
-```typescript
-await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'create_appeal',
-  arguments: {
-    denial_id: 'denial-uuid',
-    claim_id: 'claim-uuid',
-    appeal_type: 'external_review', // Skip internal appeals
-    appeal_amount: 5000.0,
-    appeal_reason:
-      'Request expedited external review due to serious jeopardy to patient health. Ongoing chemotherapy treatment denied as not medically necessary...',
-    priority: 'high',
-    due_date: '2024-01-25', // 3 days
-    supporting_documents: [
-      'physician-letter-medical-necessity.pdf',
-      'clinical-guidelines.pdf',
-    ],
-  },
-})
-```
-
-### Scenario 3: Second Level Appeal
-
-If first level appeal was denied:
-
-```typescript
-// Update original appeal
-await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'update_appeal',
-  arguments: {
-    appeal_id: 'first-level-appeal-uuid',
-    status: 'denied',
-    decision_date: '2024-02-01',
-    payer_response: 'Upheld original denial. Authorization not on file.',
-  },
-})
-
-// Create second level appeal
-await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'create_appeal',
-  arguments: {
-    denial_id: 'same-denial-uuid',
-    claim_id: 'same-claim-uuid',
-    appeal_type: 'second_level',
-    appeal_amount: 500.0,
-    appeal_reason:
-      "Second level appeal. New evidence shows authorization was obtained via phone on 1/14/2024. Payer's records incomplete. Attached: (1) Phone log with auth rep name and reference number...",
-    priority: 'high',
-    due_date: '2024-03-01',
-  },
-})
-```
-
-## Integration with Other Flows
-
-### Flow A: Denial Triage → Appeals
-
-```typescript
-// Step 1: Classify denial (Flow A)
-const classification = await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'classify_denial',
-  arguments: { denial_code: 'CO-197' },
-})
-
-// Step 2: Get recommended action
-const action = await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'suggest_next_action',
-  arguments: {
-    claim_id: 'claim-uuid',
-    denial_code: 'CO-197',
-    denial_amount: 500,
-  },
-})
-
-// Step 3: If action is "appeal", create appeal (Flow E)
-if (action.recommended_action === 'appeal') {
-  await use_mcp_tool({
-    server_name: 'rcm-mcp-server',
-    tool_name: 'create_appeal',
-    arguments: {
-      denial_id: 'denial-uuid',
-      claim_id: 'claim-uuid',
-      appeal_amount: 500,
-      appeal_reason: action.next_steps.join(' '),
-      priority: action.priority,
-    },
-  })
-}
-```
-
-### Flow B: Cash Leakage → Targeted Appeals
-
-```typescript
-// Find systematic issues
-const analytics = await use_mcp_tool({
-  server_name: 'rcm-mcp-server',
-  tool_name: 'batch_classify_denials',
-  arguments: {
-    denials: monthlyDenials,
-    group_by: 'category',
-  },
-})
-
-// Target highest impact category for appeals
-const topCategory = analytics.groups[0] // AUTHORIZATION category, $50k
-console.log(
-  `Focus appeals on ${topCategory.group_key}: ${topCategory.count} denials, $${topCategory.total_amount}`
-)
-```
-
-## Database Schema
-
-Appeals are stored in the `appeals` table:
-
-```sql
-CREATE TABLE appeals (
-  id UUID PRIMARY KEY,
-  denial_id UUID REFERENCES denials(id),
-  claim_id UUID REFERENCES claims(id),
-  appeal_type VARCHAR(50) DEFAULT 'first_level',
-  status VARCHAR(50) DEFAULT 'pending',
-  priority VARCHAR(20) DEFAULT 'medium',
-  appeal_amount DECIMAL(10,2) NOT NULL,
-  filed_date TIMESTAMP,
-  due_date TIMESTAMP,
-  decision_date TIMESTAMP,
-  approved_amount DECIMAL(10,2),
-  appeal_reason TEXT,
-  supporting_documents JSONB,
-  notes TEXT,
-  assigned_to VARCHAR(255),
-  payer_response TEXT,
-  created_at TIMESTAMP DEFAULT now(),
-  updated_at TIMESTAMP DEFAULT now()
-);
-```
-
-**Automatic updates:**
-
-- When appeal is created → `claims.status` set to 'appealed'
-- When appeal is created → `denials.appealed` flag set to true
-- When appeal approved → `denials.resolution_status` set to 'resolved'
-- When appeal denied → `denials.resolution_status` set to 'abandoned'
-
-## Tools Reference
-
-| Tool                   | Purpose                      | Key Parameters                                    |
-| ---------------------- | ---------------------------- | ------------------------------------------------- |
-| `create_appeal`        | Create new appeal            | denial_id, claim_id, appeal_amount, appeal_reason |
-| `update_appeal`        | Update appeal status/outcome | appeal_id, status, approved_amount                |
-| `list_appeals`         | Query appeals with filters   | status, priority, overdue_only                    |
-| `get_appeal_analytics` | Get success metrics          | (none)                                            |
+**Tip:** Set due dates 15-30 days before actual deadline for buffer time.
 
 ## Next Steps
 
-- Review [Denial Triage](./denial-triage.md) for identifying appealable denials
-- Use `batch_classify_denials` tool for systematic denial pattern analysis
-- Check the mcp-server README for detailed tool parameter schemas
+- **[Denial Triage](./denial-triage.md)** - Identify appealable denials
+- **[Write-offs](./write-offs.md)** - Handle non-appealable denials
+- **[Cash Leakage](./cash-leakage.md)** - Analyze appeal patterns

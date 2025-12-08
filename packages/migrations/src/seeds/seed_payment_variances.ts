@@ -1,10 +1,11 @@
 import type { Client } from 'pg'
+import type { PaymentVarianceSeed } from '@rcm/shared-types'
 import { logger } from '../utils/logger.js'
 
 export async function seedPaymentVariances(client: Client): Promise<void> {
   logger.info('Seeding payment variances...')
 
-  const paymentVariances = [
+  const paymentVariances: PaymentVarianceSeed[] = [
     // Underpayment variance - incorrect fee schedule applied
     {
       id: 'b50e8400-e29b-41d4-a716-446655440001',

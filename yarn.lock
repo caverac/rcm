@@ -3936,6 +3936,7 @@ __metadata:
   resolution: "@rcm/mcp-server@workspace:packages/mcp-server"
   dependencies:
     "@modelcontextprotocol/sdk": "npm:^1.24.3"
+    "@rcm/shared-types": "workspace:*"
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:^24.10.1"
     "@types/pg": "npm:^8.15.6"
@@ -3944,6 +3945,7 @@ __metadata:
     pg: "npm:^8.16.3"
     ts-jest: "npm:^29.4.6"
     typescript: "npm:^5.9.3"
+    zod: "npm:^4.1.13"
   languageName: unknown
   linkType: soft
 
@@ -3951,6 +3953,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rcm/migrations@workspace:packages/migrations"
   dependencies:
+    "@rcm/shared-types": "workspace:*"
     "@types/node": "npm:^24.10.1"
     "@types/pg": "npm:^8.15.6"
     dotenv: "npm:^17.2.3"
@@ -3962,7 +3965,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rcm/shared-types@workspace:packages/shared-types":
+"@rcm/shared-types@workspace:*, @rcm/shared-types@workspace:packages/shared-types":
   version: 0.0.0-use.local
   resolution: "@rcm/shared-types@workspace:packages/shared-types"
   dependencies:

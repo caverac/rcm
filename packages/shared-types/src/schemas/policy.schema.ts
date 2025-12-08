@@ -22,7 +22,7 @@ export const OrgPolicySchema = z.object({
   days_to_action: z.number().positive().optional().nullable(),
   auto_appeal: z.boolean().default(false),
   auto_write_off: z.boolean().default(false),
-  config: z.record(z.any()).optional(),
+  config: z.record(z.string(), z.any()).optional(),
   is_active: z.boolean().default(true),
   created_at: z.coerce.date().optional(),
   updated_at: z.coerce.date().optional(),

@@ -1,10 +1,11 @@
 import type { Client } from 'pg'
+import type { ClaimSeed } from '@rcm/shared-types'
 import { logger } from '../utils/logger.js'
 
 export async function seedClaims(client: Client): Promise<void> {
   logger.info('Seeding claims...')
 
-  const claims = [
+  const claims: ClaimSeed[] = [
     // Claim that will be paid successfully
     {
       id: '650e8400-e29b-41d4-a716-446655440001',

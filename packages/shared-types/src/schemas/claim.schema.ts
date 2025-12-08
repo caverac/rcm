@@ -10,6 +10,17 @@ export const CPTCodeSchema = z.object({
 
 export type CPTCode = z.infer<typeof CPTCodeSchema>
 
+// CPT Code Seed Schema (looser validation for seed data)
+export const CPTCodeSeedSchema = z.object({
+  code: z.string(),
+  modifier: z.string().optional(),
+  modifiers: z.array(z.string()).optional(),
+  units: z.number().positive().optional(),
+  description: z.string().optional(),
+})
+
+export type CPTCodeSeed = z.infer<typeof CPTCodeSeedSchema>
+
 // Diagnosis Code Schema
 export const DiagnosisCodeSchema = z.object({
   code: z
@@ -52,7 +63,7 @@ export const ClaimSchema = z.object({
   diagnosis_codes: z.array(DiagnosisCodeSchema).optional(),
   place_of_service: z.string().max(10).optional().nullable(),
   claim_type: z.string().max(50).optional().nullable(),
-  raw_data: z.record(z.any()).optional(),
+  raw_data: z.record(z.string(), z.any()).optional(),
   created_at: z.coerce.date().optional(),
   updated_at: z.coerce.date().optional(),
 })
@@ -61,7 +72,7 @@ export type Claim = z.infer<typeof ClaimSchema>
 
 // Normalize Claim Input Schema
 export const NormalizeClaimInputSchema = z.object({
-  claim_data: z.record(z.any()),
+  claim_data: z.record(z.string(), z.any()),
   format: z.enum(['837', '835', 'json']).default('json'),
 })
 
@@ -73,3 +84,33 @@ export const NormalizedClaimSchema = ClaimSchema.extend({
 })
 
 export type NormalizedClaim = z.infer<typeof NormalizedClaimSchema>
+
+// Diagnosis Code Seed Schema (looser validation for seed data)
+export const DiagnosisCodeSeedSchema = z.object({
+  code: z.string(),
+  pointer: z.number().positive().optional(),
+  description: z.string().optional(),
+})
+
+export type DiagnosisCodeSeed = z.infer<typeof DiagnosisCodeSeedSchema>
+
+// Claim Seed Schema (for inserting seed data with string dates)
+export const ClaimSeedSchema = z.object({
+  id: z.string().uuid(),
+  claim_id: z.string(),
+  patient_id: z.string(),
+  payer_id: z.string().uuid().optional(),
+  status: ClaimStatusSchema,
+  amount: z.number().positive(),
+  paid_amount: z.number().nonnegative().nullable().optional(),
+  service_date: z.string().optional(), // String for seed data
+  submitted_date: z.string().optional(), // String for seed data
+  cpt_codes: z.array(CPTCodeSeedSchema).optional(),
+  diagnosis_codes: z.array(DiagnosisCodeSeedSchema).optional(),
+  place_of_service: z.string().optional(),
+  claim_type: z.string().optional(),
+  has_payment_variance: z.boolean().optional(),
+  variance_count: z.number().optional(),
+})
+
+export type ClaimSeed = z.infer<typeof ClaimSeedSchema>
