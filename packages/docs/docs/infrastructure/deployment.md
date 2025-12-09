@@ -2,20 +2,6 @@
 sidebar_position: 1
 ---
 
-# Infrastructure Deployment
-
-AWS CDK infrastructure for the Revenue Cycle Management application.
-
-## Table of Contents
-
-- [Architecture](#architecture)
-- [What Gets Deployed](#what-gets-deployed)
-- [Prerequisites](#prerequisites)
-- [Deploying](#deploying)
-- [Post-Deployment Setup](#post-deployment-setup)
-- [Tearing Down](#tearing-down)
-- [Troubleshooting](#troubleshooting)
-
 ## Architecture
 
 This package deploys a **PostgreSQL RDS instance** for the RCM MCP server. The MCP server runs locally on your machine and connects to this remote database.
