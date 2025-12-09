@@ -124,7 +124,7 @@ export async function normalizeClaim(
 }
 
 function parseEDIFormat(
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   warnings: string[]
 ): Partial<NormalizedClaim> {
   // Simplified EDI parsing - in production use proper EDI parser library
@@ -145,8 +145,8 @@ function parseEDIFormat(
 }
 
 function parseJSONFormat(
-  data: Record<string, any>,
-  warnings: string[]
+  data: Record<string, unknown>,
+  _warnings: string[]
 ): Partial<NormalizedClaim> {
   // Parse CPT codes
   let cpt_codes: CPTCode[] | undefined

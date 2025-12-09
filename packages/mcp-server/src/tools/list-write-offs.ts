@@ -1,4 +1,4 @@
-import { query } from '../db.js'
+import { query, QueryParam } from '../db.js'
 import { ListWriteOffsInput, WriteOff } from '../types.js'
 
 export async function listWriteOffs(
@@ -17,7 +17,7 @@ export async function listWriteOffs(
 
   // Build dynamic WHERE clause
   const conditions: string[] = []
-  const values: any[] = []
+  const values: QueryParam[] = []
   let paramCount = 1
 
   if (write_off_reason !== undefined) {

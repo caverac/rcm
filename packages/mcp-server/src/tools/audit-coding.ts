@@ -1,13 +1,17 @@
 import { query } from '../db.js'
+import type { CPTCode, DiagnosisCode } from '../types.js'
 import { AuditCodingInput, CodingAuditResult, CodingRule } from '../types.js'
+
+// Type for audit errors used internally
+type AuditError = CodingAuditResult['errors'][number]
 
 export async function auditCoding(
   input: AuditCodingInput
 ): Promise<CodingAuditResult> {
   const { claim_data, include_warnings = true } = input
-  const { cpt_codes, diagnosis_codes, payer_id, place_of_service } = claim_data
+  const { cpt_codes, diagnosis_codes, payer_id } = claim_data
 
-  const errors: CodingAuditResult['errors'] = []
+  const errors: AuditError[] = []
 
   // Get applicable coding rules
   const rules = await query<CodingRule>(
@@ -74,12 +78,12 @@ export async function auditCoding(
 
 function checkModifierRequired(
   rule: CodingRule,
-  cpt_codes: any[],
-  errors: any[]
+  cpt_codes: CPTCode[],
+  errors: AuditError[]
 ): void {
   for (const cpt of cpt_codes) {
-    const cptCode = typeof cpt === 'string' ? cpt : cpt.code
-    const modifiers = typeof cpt === 'object' ? cpt.modifiers || [] : []
+    const cptCode = cpt.code
+    const modifiers = cpt.modifiers ?? []
 
     // Check if this CPT matches the rule
     let matches = false
@@ -109,12 +113,12 @@ function checkModifierRequired(
 
 function checkDiagnosisSupport(
   rule: CodingRule,
-  cpt_codes: any[],
-  diagnosis_codes: any[],
-  errors: any[]
+  cpt_codes: CPTCode[],
+  diagnosis_codes: DiagnosisCode[],
+  errors: AuditError[]
 ): void {
   for (const cpt of cpt_codes) {
-    const cptCode = typeof cpt === 'string' ? cpt : cpt.code
+    const cptCode = cpt.code
 
     // Check if this CPT matches the rule
     let matches = false
@@ -128,8 +132,7 @@ function checkDiagnosisSupport(
       // Check if any diagnosis code matches the required pattern
       const pattern = new RegExp(rule.required_diagnosis_pattern)
       const hasMatchingDx = diagnosis_codes.some((dx) => {
-        const dxCode = typeof dx === 'string' ? dx : dx.code
-        return pattern.test(dxCode)
+        return pattern.test(dx.code)
       })
 
       if (!hasMatchingDx) {
@@ -147,12 +150,12 @@ function checkDiagnosisSupport(
 
 function checkDiagnosisValidation(
   rule: CodingRule,
-  diagnosis_codes: any[],
-  errors: any[]
+  diagnosis_codes: DiagnosisCode[],
+  errors: AuditError[]
 ): void {
   // Check for overly general or invalid diagnosis codes
   for (const dx of diagnosis_codes) {
-    const dxCode = typeof dx === 'string' ? dx : dx.code
+    const dxCode = dx.code
 
     // Check for Z00.00 (too general)
     if (dxCode === 'Z00.00' || dxCode.endsWith('.00')) {
@@ -168,12 +171,12 @@ function checkDiagnosisValidation(
 
 function checkBundling(
   rule: CodingRule,
-  cpt_codes: any[],
-  errors: any[]
+  cpt_codes: CPTCode[],
+  errors: AuditError[]
 ): void {
   // Check for codes that shouldn't be billed together
   if (rule.incompatible_codes && cpt_codes.length > 1) {
-    const codes = cpt_codes.map((c) => (typeof c === 'string' ? c : c.code))
+    const codes = cpt_codes.map((c) => c.code)
 
     for (const incompatible of rule.incompatible_codes) {
       if (codes.includes(incompatible)) {
@@ -191,11 +194,11 @@ function checkBundling(
 
 function checkIncompatibleCodes(
   rule: CodingRule,
-  cpt_codes: any[],
-  errors: any[]
+  cpt_codes: CPTCode[],
+  errors: AuditError[]
 ): void {
   if (rule.incompatible_codes && cpt_codes.length > 1) {
-    const codes = cpt_codes.map((c) => (typeof c === 'string' ? c : c.code))
+    const codes = cpt_codes.map((c) => c.code)
 
     for (const incompatible of rule.incompatible_codes) {
       const incompatibleList = Array.isArray(incompatible)
@@ -217,14 +220,14 @@ function checkIncompatibleCodes(
 }
 
 function performBuiltInValidations(
-  cpt_codes: any[],
-  diagnosis_codes: any[],
-  errors: any[],
+  cpt_codes: CPTCode[],
+  diagnosis_codes: DiagnosisCode[],
+  errors: AuditError[],
   include_warnings: boolean
 ): void {
   // Validate CPT code format
   for (const cpt of cpt_codes) {
-    const cptCode = typeof cpt === 'string' ? cpt : cpt.code
+    const cptCode = cpt.code
     if (!cptCode || !/^\d{5}$/.test(cptCode)) {
       errors.push({
         rule_name: 'CPT Format Validation',
@@ -238,7 +241,7 @@ function performBuiltInValidations(
 
   // Validate diagnosis code format
   for (const dx of diagnosis_codes) {
-    const dxCode = typeof dx === 'string' ? dx : dx.code
+    const dxCode = dx.code
     if (!dxCode || !/^[A-Z]\d{2}/.test(dxCode)) {
       errors.push({
         rule_name: 'ICD-10 Format Validation',
@@ -253,30 +256,27 @@ function performBuiltInValidations(
   // Check for E/M code with procedure on same day (modifier 25 warning)
   if (include_warnings && cpt_codes.length > 1) {
     const hasProcedure = cpt_codes.some((c) => {
-      const code = typeof c === 'string' ? c : c.code
-      return /^(1|2|3|4|5|6|7|8|9)/.test(code) // Surgical codes typically start with 1-9
+      return /^(1|2|3|4|5|6|7|8|9)/.test(c.code) // Surgical codes typically start with 1-9
     })
 
     const hasEM = cpt_codes.some((c) => {
-      const code = typeof c === 'string' ? c : c.code
-      return /^99[2-4]/.test(code) // E/M codes
+      return /^99[2-4]/.test(c.code) // E/M codes
     })
 
     if (hasProcedure && hasEM) {
       const emCodes = cpt_codes.filter((c) => {
-        const code = typeof c === 'string' ? c : c.code
-        return /^99[2-4]/.test(code)
+        return /^99[2-4]/.test(c.code)
       })
 
       for (const em of emCodes) {
-        const modifiers = typeof em === 'object' ? em.modifiers || [] : []
+        const modifiers = em.modifiers ?? []
         if (!modifiers.includes('25')) {
           errors.push({
             rule_name: 'E/M with Procedure Same Day',
             severity: 'warning',
             message:
               'E/M code billed on same day as procedure typically requires modifier 25',
-            cpt_code: typeof em === 'string' ? em : em.code,
+            cpt_code: em.code,
             suggestion:
               'Add modifier 25 to E/M code if separately identifiable service',
           })

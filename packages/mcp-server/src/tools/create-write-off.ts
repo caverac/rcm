@@ -20,8 +20,16 @@ export async function createWriteOff(
     throw new Error('Write-off amount must be positive')
   }
 
+  // Define the shape of the denial query result
+  interface DenialRow {
+    id: string
+    denial_amount: number
+    denial_category: string
+    written_off: boolean
+  }
+
   // Validate that denial exists and check if already written off
-  const denialResults = await query(
+  const denialResults = await query<DenialRow>(
     'SELECT id, denial_amount, denial_category, written_off FROM denials WHERE id = $1',
     [denial_id]
   )

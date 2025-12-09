@@ -61,11 +61,11 @@ sequenceDiagram
 
 ## What Gets Deployed
 
-| Resource | Description | Cost Estimate |
-|----------|-------------|---------------|
-| VPC | Public subnets in 2 AZs | Free |
-| RDS PostgreSQL | t4g.micro, 20GB storage | ~$15/month |
-| Secrets Manager | Database credentials at `/rcm/db-credentials` | ~$0.40/month |
+| Resource        | Description                                   | Cost Estimate |
+| --------------- | --------------------------------------------- | ------------- |
+| VPC             | Public subnets in 2 AZs                       | Free          |
+| RDS PostgreSQL  | t4g.micro, 20GB storage                       | ~$15/month    |
+| Secrets Manager | Database credentials at `/rcm/db-credentials` | ~$0.40/month  |
 
 **Total: ~$15-16/month**
 
@@ -128,6 +128,7 @@ aws secretsmanager get-secret-value \
 ```
 
 Output:
+
 ```json
 {
   "host": "rcmstack-xxx.region.rds.amazonaws.com",
@@ -152,6 +153,7 @@ echo $DATABASE_URL
 ```
 
 Or add to `packages/mcp-server/.env`:
+
 ```bash
 # Generate the .env file
 echo "DATABASE_URL=$(aws secretsmanager get-secret-value \
@@ -187,13 +189,13 @@ yarn workspace @rcm/mcp-server start
 
 The `/rcm/db-credentials` secret contains:
 
-| Field | Description |
-|-------|-------------|
-| `host` | RDS endpoint hostname |
-| `port` | Database port (5432) |
-| `dbname` | Database name (rcmdb) |
-| `username` | Database username (rcm_admin) |
-| `password` | Generated password |
+| Field               | Description                    |
+| ------------------- | ------------------------------ |
+| `host`              | RDS endpoint hostname          |
+| `port`              | Database port (5432)           |
+| `dbname`            | Database name (rcmdb)          |
+| `username`          | Database username (rcm_admin)  |
+| `password`          | Generated password             |
 | `connection_string` | Full PostgreSQL connection URL |
 
 ## Tearing Down
@@ -220,6 +222,7 @@ This is a **demo configuration** with the database publicly accessible. For prod
 ### Can't connect to database
 
 1. Check security group allows your IP:
+
    ```bash
    curl ifconfig.me
    ```
@@ -232,6 +235,7 @@ This is a **demo configuration** with the database publicly accessible. For prod
 ### CDK deployment fails
 
 1. Ensure you have AWS credentials configured:
+
    ```bash
    aws sts get-caller-identity
    ```
@@ -244,6 +248,7 @@ This is a **demo configuration** with the database publicly accessible. For prod
 ### Secret not found
 
 If the secret doesn't exist after deployment, check the CloudFormation events:
+
 ```bash
 aws cloudformation describe-stack-events \
   --stack-name RcmStack \

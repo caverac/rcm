@@ -12,8 +12,8 @@ Cash leakage occurs when denials are left unworked or not appealed when viable. 
 
 ## Tools Used
 
-| Tool | Purpose |
-|------|---------|
+| Tool                     | Purpose                                                |
+| ------------------------ | ------------------------------------------------------ |
 | `batch_classify_denials` | Analyze multiple denials, group by category/payer/code |
 
 ## Example: Analyze Seeded Denials
@@ -33,38 +33,38 @@ The `batch_classify_denials` tool groups the seeded denials:
 ```json
 {
   "total_denials": 4,
-  "total_amount": 1265.00,
+  "total_amount": 1265.0,
   "groups": [
     {
       "group_key": "AUTHORIZATION",
       "count": 1,
-      "total_amount": 500.00,
+      "total_amount": 500.0,
       "percentage": 39.5,
-      "avg_amount": 500.00,
+      "avg_amount": 500.0,
       "top_codes": ["CO-197"]
     },
     {
       "group_key": "MEDICAL_NECESSITY",
       "count": 1,
-      "total_amount": 500.00,
+      "total_amount": 500.0,
       "percentage": 39.5,
-      "avg_amount": 500.00,
+      "avg_amount": 500.0,
       "top_codes": ["CO-50"]
     },
     {
       "group_key": "CODING_ERROR",
       "count": 1,
-      "total_amount": 250.00,
+      "total_amount": 250.0,
       "percentage": 19.8,
-      "avg_amount": 250.00,
+      "avg_amount": 250.0,
       "top_codes": ["CO-4"]
     },
     {
       "group_key": "PATIENT_RESPONSIBILITY",
       "count": 1,
-      "total_amount": 15.00,
+      "total_amount": 15.0,
       "percentage": 1.2,
-      "avg_amount": 15.00,
+      "avg_amount": 15.0,
       "top_codes": ["PR-1"]
     }
   ],
@@ -80,26 +80,27 @@ The `batch_classify_denials` tool groups the seeded denials:
 
 > Analysis of 4 denials totaling $1,265:
 >
-> | Category | Count | Amount | % | Action |
-> |----------|-------|--------|---|--------|
-> | Authorization | 1 | $500 | 40% | Appeal (CO-197 on CLM-2024-001235) |
-> | Medical Necessity | 1 | $500 | 40% | Appeal with clinical documentation |
-> | Coding Error | 1 | $250 | 20% | Already rebilled (CO-4) |
-> | Patient Responsibility | 1 | $15 | 1% | Written off per policy |
+> | Category               | Count | Amount | %   | Action                             |
+> | ---------------------- | ----- | ------ | --- | ---------------------------------- |
+> | Authorization          | 1     | $500   | 40% | Appeal (CO-197 on CLM-2024-001235) |
+> | Medical Necessity      | 1     | $500   | 40% | Appeal with clinical documentation |
+> | Coding Error           | 1     | $250   | 20% | Already rebilled (CO-4)            |
+> | Patient Responsibility | 1     | $15    | 1%  | Written off per policy             |
 >
 > **Key Findings:**
+>
 > - 80% of denial dollars ($1,000) are appealable
 > - The CO-4 coding error was preventable with modifier validation
 > - $15 PR-1 correctly written off (below $25 threshold)
 
 ## Seeded Data Summary
 
-| Denial | Claim | Amount | Status | Resolution |
-|--------|-------|--------|--------|------------|
-| CO-197 | CLM-2024-001235 | $500 | Appeal submitted | Pending |
-| CO-50 | CLM-2024-001235 | $500 | Appeal pending | In progress |
-| CO-4 | CLM-2024-001237 | $250 | Rebilled | Paid $200 |
-| PR-1 | CLM-2024-001236 | $15 | Written off | Below threshold |
+| Denial | Claim           | Amount | Status           | Resolution      |
+| ------ | --------------- | ------ | ---------------- | --------------- |
+| CO-197 | CLM-2024-001235 | $500   | Appeal submitted | Pending         |
+| CO-50  | CLM-2024-001235 | $500   | Appeal pending   | In progress     |
+| CO-4   | CLM-2024-001237 | $250   | Rebilled         | Paid $200       |
+| PR-1   | CLM-2024-001236 | $15    | Written off      | Below threshold |
 
 ## Workflow Diagram
 

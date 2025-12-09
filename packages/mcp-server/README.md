@@ -98,56 +98,56 @@ What denials do we have in the system? Classify them and suggest next actions.
 
 ### Claims Management
 
-| Tool | Description |
-|------|-------------|
-| `normalize_claim` | Normalize and validate claim data from various formats (837, 835, JSON) |
-| `list_claims` | List claims with optional filters (patient, status) |
-| `get_claim` | Retrieve claim details by ID |
-| `update_claim_status` | Update claim status |
+| Tool                  | Description                                                             |
+| --------------------- | ----------------------------------------------------------------------- |
+| `normalize_claim`     | Normalize and validate claim data from various formats (837, 835, JSON) |
+| `list_claims`         | List claims with optional filters (patient, status)                     |
+| `get_claim`           | Retrieve claim details by ID                                            |
+| `update_claim_status` | Update claim status                                                     |
 
 ### Denial Classification
 
-| Tool | Description |
-|------|-------------|
-| `classify_denial` | Classify denial code and get resolution guidance |
-| `suggest_next_action` | Get policy-based recommendation (appeal, rebill, write-off) |
-| `batch_classify_denials` | Analyze multiple denials for patterns and insights |
-| `audit_coding` | Pre-submission coding validation |
+| Tool                     | Description                                                 |
+| ------------------------ | ----------------------------------------------------------- |
+| `classify_denial`        | Classify denial code and get resolution guidance            |
+| `suggest_next_action`    | Get policy-based recommendation (appeal, rebill, write-off) |
+| `batch_classify_denials` | Analyze multiple denials for patterns and insights          |
+| `audit_coding`           | Pre-submission coding validation                            |
 
 ### Appeals Management
 
-| Tool | Description |
-|------|-------------|
-| `create_appeal` | Create appeal for a denied claim |
-| `update_appeal` | Update appeal status, decision, payer response |
-| `list_appeals` | Query appeals (status, priority, overdue, assignee) |
-| `get_appeal_analytics` | Success rates, recovery metrics, insights |
+| Tool                   | Description                                         |
+| ---------------------- | --------------------------------------------------- |
+| `create_appeal`        | Create appeal for a denied claim                    |
+| `update_appeal`        | Update appeal status, decision, payer response      |
+| `list_appeals`         | Query appeals (status, priority, overdue, assignee) |
+| `get_appeal_analytics` | Success rates, recovery metrics, insights           |
 
 ### Write-offs
 
-| Tool | Description |
-|------|-------------|
-| `create_write_off` | Write off uncollectible amount with preventability tracking |
-| `list_write_offs` | Query write-offs (reason, category, preventability) |
-| `get_write_off_analytics` | Preventable write-off analysis |
+| Tool                      | Description                                                 |
+| ------------------------- | ----------------------------------------------------------- |
+| `create_write_off`        | Write off uncollectible amount with preventability tracking |
+| `list_write_offs`         | Query write-offs (reason, category, preventability)         |
+| `get_write_off_analytics` | Preventable write-off analysis                              |
 
 ### Rebills
 
-| Tool | Description |
-|------|-------------|
-| `create_rebill` | Create rebill after correcting denied claim |
-| `update_rebill` | Update rebill status and resolution |
-| `list_rebills` | Query rebills (status, reason, claim) |
-| `get_rebill_analytics` | Success rates by correction type |
+| Tool                   | Description                                 |
+| ---------------------- | ------------------------------------------- |
+| `create_rebill`        | Create rebill after correcting denied claim |
+| `update_rebill`        | Update rebill status and resolution         |
+| `list_rebills`         | Query rebills (status, reason, claim)       |
+| `get_rebill_analytics` | Success rates by correction type            |
 
 ### Payment Variances
 
-| Tool | Description |
-|------|-------------|
-| `create_payment_variance` | Track underpayments/overpayments |
-| `update_payment_variance` | Update resolution, link to appeals |
-| `list_payment_variances` | Query variances (type, payer, severity) |
-| `get_payment_variance_analytics` | Payer patterns and contract compliance |
+| Tool                             | Description                             |
+| -------------------------------- | --------------------------------------- |
+| `create_payment_variance`        | Track underpayments/overpayments        |
+| `update_payment_variance`        | Update resolution, link to appeals      |
+| `list_payment_variances`         | Query variances (type, payer, severity) |
+| `get_payment_variance_analytics` | Payer patterns and contract compliance  |
 
 ## Workflow Examples
 
@@ -195,6 +195,7 @@ Analyze all our denials and identify where we're losing money.
 **Expected response:**
 
 > Analysis of 4 denials totaling $1,265:
+>
 > - Authorization issues: 40% ($500) - CO-197 on claim CLM-2024-001235
 > - Medical necessity: 40% ($500) - CO-50, requires clinical documentation
 > - Coding errors: 20% ($250) - CO-4, modifier issue (already rebilled)
@@ -219,6 +220,7 @@ Check this claim before I submit it: patient PAT-007, CPT codes 99213 and 11055,
 **Expected response:**
 
 > Found 2 issues before submission:
+>
 > 1. Add modifier 25 to 99213 when billing with a procedure on the same day
 > 2. Z00.00 is too general - use a more specific diagnosis code
 >
@@ -270,6 +272,7 @@ Show me our write-offs and whether they were preventable.
 **Expected response:**
 
 > You have 1 write-off totaling $15:
+>
 > - CLM-2024-001236: $15 written off (below $25 threshold)
 > - This was marked as preventable - root cause was eligibility not verified at registration
 
@@ -293,6 +296,7 @@ What's the status of our rebills?
 **Expected response:**
 
 > You have 1 rebill:
+>
 > - CLM-2024-001237 → CLM-2024-001567: Modifier 25 added
 > - Status: Paid, recovered $200 of $250
 > - This was a coding error (CO-4) that was successfully corrected
@@ -318,6 +322,7 @@ Do we have any underpayments we should look at?
 **Expected response:**
 
 > Found 1 underpayment requiring attention:
+>
 > - CLM-2024-001890 (Medicare): Paid $425 instead of $500 (-15%)
 > - Reason: Incorrect 2023 fee schedule applied instead of 2024 rates
 > - Recommendation: Appeal this variance - it's a contract compliance issue

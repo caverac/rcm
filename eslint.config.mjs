@@ -35,9 +35,13 @@ export default [
   {
     ignores: [
       '**/dist/**',
+      '**/build/**',
       '**/node_modules/**',
       '**/.yarn/**',
       '**/cdk.out/**',
+      '**/.docusaurus/**',
+      '**/*.spec.ts',
+      '**/*.test.ts',
     ],
   },
 ]

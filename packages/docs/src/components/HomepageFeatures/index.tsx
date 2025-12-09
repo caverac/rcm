@@ -42,8 +42,7 @@ const PackageList: PackageItem[] = [
     description: (
       <>
         AWS CDK infrastructure for production deployment. Provisions RDS
-        PostgreSQL, VPC networking, and S3 storage with security best
-        practices.
+        PostgreSQL, VPC networking, and S3 storage with security best practices.
       </>
     ),
     link: '/docs/infrastructure/deployment',
@@ -69,9 +68,7 @@ function PackageCard({ title, icon, description, link }: PackageItem) {
           <div className={styles.packageIcon}>{icon}</div>
           <Heading as="h3">{title}</Heading>
           <p>{description}</p>
-          <div className={styles.packageLink}>
-            View Documentation →
-          </div>
+          <div className={styles.packageLink}>View Documentation →</div>
         </div>
       </Link>
     </div>

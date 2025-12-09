@@ -1,4 +1,3 @@
-import { query } from '../db.js'
 import { BatchClassifyDenialsInput, DenialAnalytics } from '../types.js'
 import { classifyDenial } from './classify-denial.js'
 

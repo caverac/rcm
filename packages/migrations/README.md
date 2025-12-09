@@ -108,24 +108,28 @@ This database tracks the complete healthcare revenue cycle workflow, from claim 
 ### Data Flow Example
 
 **Scenario 1: Denial → Appeal (Authorization Issue)**
+
 1. **Claim Submission:** Claim `CLM-2024-001235` is created for a $500 MRI brain service, referencing payer "Blue Cross Blue Shield - California"
 2. **Denial Received:** Denial `750e8400-e29b-41d4-a716-446655440001` is created with code CO-197 (authorization absent), denying $500
 3. **Appeal Filed:** Appeal `850e8400-e29b-41d4-a716-446655440001` is created referencing the denial, with supporting documents showing authorization was obtained
 4. **Outcome:** Pending - appeal status is "submitted", assigned to Jane Smith
 
 **Scenario 2: Denial → Write-off (Small Balance)**
+
 1. **Claim Submission:** Claim `CLM-2024-001236` is created for a $15 office visit, referencing payer "United Healthcare"
 2. **Denial Received:** Denial `750e8400-e29b-41d4-a716-446655440002` is created with code PR-1 (patient responsibility)
 3. **Write-off Created:** Write-off `950e8400-e29b-41d4-a716-446655440001` is created because $15 is below the $25 threshold
 4. **Outcome:** Resolution status "abandoned", approved by Billing Manager
 
 **Scenario 3: Denial → Rebill (Coding Error)**
+
 1. **Claim Submission:** Claim `CLM-2024-001237` is created for $250, missing modifier 25 on E/M code
 2. **Denial Received:** Denial `750e8400-e29b-41d4-a716-446655440003` is created with code CO-4 (modifier error)
 3. **Rebill Created:** Rebill `a50e8400-e29b-41d4-a716-446655440001` corrects the claim with modifier 25 added
 4. **Outcome:** New claim `CLM-2024-001567` paid $200, recovery successful
 
 **Scenario 4: Payment Variance (Underpayment)**
+
 1. **Claim Submission:** Claim `CLM-2024-001890` is created for $500 office visit with ECG, referencing "Medicare"
 2. **Payment Received:** Only $425 paid instead of expected $500
 3. **Variance Created:** Payment variance `b50e8400-e29b-41d4-a716-446655440001` tracks the -$75 (-15%) underpayment

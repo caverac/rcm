@@ -35,12 +35,12 @@ docker exec -it rcm-postgres psql -U rcm_admin -d rcmdb -c "\dt"
 
 **Local Connection Details:**
 
-| Property | Value |
-|----------|-------|
-| Host | `localhost:5432` |
-| Database | `rcmdb` |
-| Username | `rcm_admin` |
-| Password | `rcm_password` |
+| Property     | Value                                                      |
+| ------------ | ---------------------------------------------------------- |
+| Host         | `localhost:5432`                                           |
+| Database     | `rcmdb`                                                    |
+| Username     | `rcm_admin`                                                |
+| Password     | `rcm_password`                                             |
 | DATABASE_URL | `postgresql://rcm_admin:rcm_password@localhost:5432/rcmdb` |
 
 **Optional - pgAdmin UI (local only):**
@@ -75,23 +75,23 @@ The database tracks the complete healthcare revenue cycle workflow, from claim s
 
 ### Core Entities
 
-| Table | Description |
-|-------|-------------|
-| **payers** | Insurance companies that pay for medical services |
-| **claims** | Billing requests submitted for reimbursement |
-| **denials** | Rejections by payers refusing to pay claims |
-| **appeals** | Formal requests to reconsider denied claims |
-| **write_offs** | Decisions to stop pursuing payment |
-| **rebills** | Corrected claims resubmitted after denial |
+| Table                 | Description                                        |
+| --------------------- | -------------------------------------------------- |
+| **payers**            | Insurance companies that pay for medical services  |
+| **claims**            | Billing requests submitted for reimbursement       |
+| **denials**           | Rejections by payers refusing to pay claims        |
+| **appeals**           | Formal requests to reconsider denied claims        |
+| **write_offs**        | Decisions to stop pursuing payment                 |
+| **rebills**           | Corrected claims resubmitted after denial          |
 | **payment_variances** | Discrepancies between expected and actual payments |
 
 ### Reference Tables
 
-| Table | Description |
-|-------|-------------|
+| Table                   | Description                                                 |
+| ----------------------- | ----------------------------------------------------------- |
 | **denial_code_library** | Standard denial codes with meanings and recommended actions |
-| **org_policies** | Configurable business rules for handling denials |
-| **coding_rules** | Pre-submission validation rules to prevent denials |
+| **org_policies**        | Configurable business rules for handling denials            |
+| **coding_rules**        | Pre-submission validation rules to prevent denials          |
 
 ## Schema Diagram
 
@@ -273,12 +273,12 @@ yarn workspace @rcm/migrations build && yarn workspace @rcm/migrations migrate:u
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| DATABASE_URL not set | Create `.env` file with correct DATABASE_URL |
-| Directory not found | Run `yarn workspace @rcm/migrations build` first |
+| Issue                            | Solution                                            |
+| -------------------------------- | --------------------------------------------------- |
+| DATABASE_URL not set             | Create `.env` file with correct DATABASE_URL        |
+| Directory not found              | Run `yarn workspace @rcm/migrations build` first    |
 | Unknown file extension .ts/.d.ts | Config should use `"migration-file-language": "js"` |
-| Relation already exists | Reset database schema (see above) |
+| Relation already exists          | Reset database schema (see above)                   |
 
 ## Using in Application Code
 
@@ -286,10 +286,9 @@ yarn workspace @rcm/migrations build && yarn workspace @rcm/migrations migrate:u
 import { getDbClient } from '@rcm/migrations'
 
 const client = await getDbClient()
-const result = await client.query(
-  'SELECT * FROM claims WHERE claim_id = $1',
-  [claimId]
-)
+const result = await client.query('SELECT * FROM claims WHERE claim_id = $1', [
+  claimId,
+])
 ```
 
 ## Next Steps

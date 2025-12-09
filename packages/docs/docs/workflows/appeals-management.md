@@ -12,21 +12,21 @@ When claims are denied, you may need to appeal the decision to recover revenue. 
 
 ## Tools Used
 
-| Tool | Purpose |
-|------|---------|
-| `create_appeal` | Create appeal for a denied claim |
-| `update_appeal` | Update status, decision, payer response |
-| `list_appeals` | Query appeals with filters |
-| `get_appeal_analytics` | Success rates and recovery metrics |
+| Tool                   | Purpose                                 |
+| ---------------------- | --------------------------------------- |
+| `create_appeal`        | Create appeal for a denied claim        |
+| `update_appeal`        | Update status, decision, payer response |
+| `list_appeals`         | Query appeals with filters              |
+| `get_appeal_analytics` | Success rates and recovery metrics      |
 
 ## Example: Working with Seeded Appeals
 
 The database contains 2 seeded appeals:
 
-| Appeal | Denial | Claim | Amount | Status | Priority |
-|--------|--------|-------|--------|--------|----------|
-| 850e8400...001 | CO-197 | CLM-2024-001235 | $500 | submitted | high |
-| 850e8400...002 | CO-50 | CLM-2024-001235 | $500 | pending | medium |
+| Appeal         | Denial | Claim           | Amount | Status    | Priority |
+| -------------- | ------ | --------------- | ------ | --------- | -------- |
+| 850e8400...001 | CO-197 | CLM-2024-001235 | $500   | submitted | high     |
+| 850e8400...002 | CO-50  | CLM-2024-001235 | $500   | pending   | medium   |
 
 ### Check Appeal Status
 
@@ -50,7 +50,7 @@ The `list_appeals` tool retrieves appeals from the database:
       "appeal_type": "first_level",
       "status": "submitted",
       "priority": "high",
-      "appeal_amount": 500.00,
+      "appeal_amount": 500.0,
       "filed_date": "2024-01-20",
       "due_date": "2024-02-20",
       "appeal_reason": "Authorization was obtained prior to service - see attached documentation",
@@ -61,7 +61,7 @@ The `list_appeals` tool retrieves appeals from the database:
       "appeal_type": "first_level",
       "status": "pending",
       "priority": "medium",
-      "appeal_amount": 500.00,
+      "appeal_amount": 500.0,
       "due_date": "2024-02-25",
       "appeal_reason": "Medical necessity supported by clinical documentation - MRI indicated for persistent headaches",
       "assigned_to": "John Doe"
@@ -80,7 +80,6 @@ The `list_appeals` tool retrieves appeals from the database:
 >    - Due: 2/20/2024
 >    - Assigned to: Jane Smith
 >    - Reason: Authorization documentation was obtained prior to service
->
 > 2. **CO-50 Medical Necessity Appeal** (Medium Priority)
 >    - Status: Pending (not yet submitted)
 >    - Due: 2/25/2024
@@ -104,12 +103,13 @@ The `update_appeal` tool updates the appeal:
   "appeal_id": "850e8400-e29b-41d4-a716-446655440001",
   "status": "approved",
   "decision_date": "2024-02-15",
-  "approved_amount": 450.00,
+  "approved_amount": 450.0,
   "payer_response": "Appeal approved. Authorization requirement waived."
 }
 ```
 
 **System automatically:**
+
 - Updates denial resolution_status to "resolved"
 - Sets denial recovered_amount to $450
 - Updates claim status
@@ -145,7 +145,7 @@ The `get_appeal_analytics` tool returns:
 ```json
 {
   "total_appeals": 2,
-  "total_amount": 1000.00,
+  "total_amount": 1000.0,
   "by_status": {
     "submitted": 1,
     "pending": 1
@@ -174,6 +174,7 @@ The `get_appeal_analytics` tool returns:
 ### Due Date Management
 
 Set due dates based on payer timely filing limits:
+
 - **First level**: Typically 180 days from denial
 - **Second level**: 30-60 days from first level denial
 - **External review**: 30 days from second level denial

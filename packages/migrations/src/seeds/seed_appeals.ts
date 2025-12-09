@@ -31,7 +31,8 @@ export async function seedAppeals(client: Client): Promise<void> {
           uploaded_at: '2024-01-20',
         },
       ],
-      notes: 'Escalated to high priority due to amount exceeding $250 threshold',
+      notes:
+        'Escalated to high priority due to amount exceeding $250 threshold',
       assigned_to: 'Jane Smith',
     },
     // Appeal for payment variance recovery

@@ -1,4 +1,4 @@
-import { query } from '../db.js'
+import { query, QueryParam } from '../db.js'
 import { ListPaymentVariancesInput, PaymentVariance } from '../types.js'
 
 export async function listPaymentVariances(
@@ -20,7 +20,7 @@ export async function listPaymentVariances(
 
   // Build dynamic WHERE clause
   const conditions: string[] = []
-  const values: any[] = []
+  const values: QueryParam[] = []
   let paramCount = 1
 
   if (variance_type !== undefined) {

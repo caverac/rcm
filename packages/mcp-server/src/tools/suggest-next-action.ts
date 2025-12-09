@@ -3,14 +3,13 @@ import {
   SuggestNextActionInput,
   NextActionSuggestion,
   OrgPolicy,
-  DenialCodeLibrary,
 } from '../types.js'
 import { classifyDenial } from './classify-denial.js'
 
 export async function suggestNextAction(
   input: SuggestNextActionInput
 ): Promise<NextActionSuggestion> {
-  const { claim_id, denial_code, denial_amount, payer_id } = input
+  const { denial_code, denial_amount, payer_id } = input
 
   // Get denial classification
   const classification = await classifyDenial({ denial_code })

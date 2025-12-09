@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { DenialCategorySchema } from './denial.schema.js'
 
 // Write-off Reason Enum
 export const WriteOffReasonSchema = z.enum([
