@@ -20,7 +20,8 @@ export async function seedClaims(client: Client): Promise<void> {
       cpt_codes: [
         {
           code: '99213',
-          description: 'Office/outpatient visit, established patient, low complexity',
+          description:
+            'Office/outpatient visit, established patient, low complexity',
         },
       ],
       diagnosis_codes: [
@@ -40,9 +41,7 @@ export async function seedClaims(client: Client): Promise<void> {
       paid_amount: null,
       service_date: '2024-01-10',
       submitted_date: '2024-01-11',
-      cpt_codes: [
-        { code: '70553', description: 'MRI brain with contrast' },
-      ],
+      cpt_codes: [{ code: '70553', description: 'MRI brain with contrast' }],
       diagnosis_codes: [
         { code: 'R51.9', description: 'Headache, unspecified' },
       ],

@@ -12,19 +12,19 @@ Write-offs represent accepted financial losses where denials cannot be recovered
 
 ## Tools Used
 
-| Tool | Purpose |
-|------|---------|
-| `create_write_off` | Write off uncollectible amount with preventability tracking |
-| `list_write_offs` | Query write-offs with filters |
-| `get_write_off_analytics` | Preventable write-off analysis |
+| Tool                      | Purpose                                                     |
+| ------------------------- | ----------------------------------------------------------- |
+| `create_write_off`        | Write off uncollectible amount with preventability tracking |
+| `list_write_offs`         | Query write-offs with filters                               |
+| `get_write_off_analytics` | Preventable write-off analysis                              |
 
 ## Example: Seeded Write-Off
 
 The database contains 1 seeded write-off:
 
-| Write-Off | Denial | Claim | Amount | Reason | Preventable |
-|-----------|--------|-------|--------|--------|-------------|
-| 950e8400...001 | PR-1 | CLM-2024-001236 | $15 | below_threshold | Yes |
+| Write-Off      | Denial | Claim           | Amount | Reason          | Preventable |
+| -------------- | ------ | --------------- | ------ | --------------- | ----------- |
+| 950e8400...001 | PR-1   | CLM-2024-001236 | $15    | below_threshold | Yes         |
 
 ### Review Write-Offs
 
@@ -45,7 +45,7 @@ The `list_write_offs` tool retrieves write-offs:
       "id": "950e8400-e29b-41d4-a716-446655440001",
       "denial_id": "750e8400-e29b-41d4-a716-446655440002",
       "claim_id": "650e8400-e29b-41d4-a716-446655440003",
-      "write_off_amount": 15.00,
+      "write_off_amount": 15.0,
       "write_off_reason": "below_threshold",
       "reason_notes": "Amount below $25 small-balance threshold per organization policy. Cost to pursue exceeds potential recovery.",
       "approved_by": "Billing Manager",
@@ -55,7 +55,7 @@ The `list_write_offs` tool retrieves write-offs:
     }
   ],
   "total": 1,
-  "total_amount": 15.00
+  "total_amount": 15.0
 }
 ```
 
@@ -81,15 +81,15 @@ The `get_write_off_analytics` tool returns:
 ```json
 {
   "total_write_offs": 1,
-  "total_amount": 15.00,
+  "total_amount": 15.0,
   "preventable_count": 1,
-  "preventable_amount": 15.00,
+  "preventable_amount": 15.0,
   "preventable_percentage": 100,
   "by_reason": {
-    "below_threshold": { "count": 1, "amount": 15.00 }
+    "below_threshold": { "count": 1, "amount": 15.0 }
   },
   "by_category": {
-    "PATIENT_RESPONSIBILITY": { "count": 1, "amount": 15.00 }
+    "PATIENT_RESPONSIBILITY": { "count": 1, "amount": 15.0 }
   },
   "insights": [
     "100% of write-offs ($15) are preventable",
@@ -124,14 +124,14 @@ graph LR
 
 ## Write-Off Reasons
 
-| Reason | Description | Typically Preventable |
-|--------|-------------|----------------------|
-| `below_threshold` | Amount too small to pursue | Sometimes |
-| `timely_filing_expired` | Past appeal deadline | Yes |
-| `non_covered_service` | Service not covered by plan | Sometimes |
-| `patient_responsibility` | Transferred to patient balance | Sometimes |
-| `contract_adjustment` | Contractual write-off | No |
-| `uncollectible` | Unable to collect | Varies |
+| Reason                   | Description                    | Typically Preventable |
+| ------------------------ | ------------------------------ | --------------------- |
+| `below_threshold`        | Amount too small to pursue     | Sometimes             |
+| `timely_filing_expired`  | Past appeal deadline           | Yes                   |
+| `non_covered_service`    | Service not covered by plan    | Sometimes             |
+| `patient_responsibility` | Transferred to patient balance | Sometimes             |
+| `contract_adjustment`    | Contractual write-off          | No                    |
+| `uncollectible`          | Unable to collect              | Varies                |
 
 ## Categories
 

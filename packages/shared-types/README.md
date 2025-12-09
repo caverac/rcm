@@ -95,73 +95,73 @@ console.log(JSON.stringify(jsonSchema, null, 2))
 
 ### Entity Schemas
 
-| Schema | Type | Description |
-|--------|------|-------------|
-| `ClaimSchema` | `Claim` | Insurance claim with CPT/diagnosis codes |
-| `DenialSchema` | `Denial` | Claim denial with reason codes |
-| `AppealSchema` | `Appeal` | Appeal for denied claims |
-| `PayerSchema` | `Payer` | Insurance payer/carrier |
-| `WriteOffSchema` | `WriteOff` | Written-off denial amounts |
-| `RebillSchema` | `Rebill` | Corrected claim resubmissions |
-| `PaymentVarianceSchema` | `PaymentVariance` | Payment discrepancies |
-| `OrgPolicySchema` | `OrgPolicy` | Organization billing policies |
-| `CodingRuleSchema` | `CodingRule` | CPT/ICD coding rules |
+| Schema                  | Type              | Description                              |
+| ----------------------- | ----------------- | ---------------------------------------- |
+| `ClaimSchema`           | `Claim`           | Insurance claim with CPT/diagnosis codes |
+| `DenialSchema`          | `Denial`          | Claim denial with reason codes           |
+| `AppealSchema`          | `Appeal`          | Appeal for denied claims                 |
+| `PayerSchema`           | `Payer`           | Insurance payer/carrier                  |
+| `WriteOffSchema`        | `WriteOff`        | Written-off denial amounts               |
+| `RebillSchema`          | `Rebill`          | Corrected claim resubmissions            |
+| `PaymentVarianceSchema` | `PaymentVariance` | Payment discrepancies                    |
+| `OrgPolicySchema`       | `OrgPolicy`       | Organization billing policies            |
+| `CodingRuleSchema`      | `CodingRule`      | CPT/ICD coding rules                     |
 
 ### Input Schemas (for tool/API parameters)
 
-| Schema | Type | Purpose |
-|--------|------|---------|
-| `NormalizeClaimInputSchema` | `NormalizeClaimInput` | Claim normalization |
-| `ClassifyDenialInputSchema` | `ClassifyDenialInput` | Denial classification |
-| `SuggestNextActionInputSchema` | `SuggestNextActionInput` | Action recommendations |
-| `CreateAppealInputSchema` | `CreateAppealInput` | Create new appeal |
-| `UpdateAppealInputSchema` | `UpdateAppealInput` | Update existing appeal |
-| `ListAppealsInputSchema` | `ListAppealsInput` | Query appeals |
-| `CreateWriteOffInputSchema` | `CreateWriteOffInput` | Create write-off |
-| `ListWriteOffsInputSchema` | `ListWriteOffsInput` | Query write-offs |
-| `CreateRebillInputSchema` | `CreateRebillInput` | Create rebill |
-| `UpdateRebillInputSchema` | `UpdateRebillInput` | Update rebill |
-| `ListRebillsInputSchema` | `ListRebillsInput` | Query rebills |
-| `CreatePaymentVarianceInputSchema` | `CreatePaymentVarianceInput` | Create variance |
-| `UpdatePaymentVarianceInputSchema` | `UpdatePaymentVarianceInput` | Update variance |
-| `ListPaymentVariancesInputSchema` | `ListPaymentVariancesInput` | Query variances |
+| Schema                             | Type                         | Purpose                |
+| ---------------------------------- | ---------------------------- | ---------------------- |
+| `NormalizeClaimInputSchema`        | `NormalizeClaimInput`        | Claim normalization    |
+| `ClassifyDenialInputSchema`        | `ClassifyDenialInput`        | Denial classification  |
+| `SuggestNextActionInputSchema`     | `SuggestNextActionInput`     | Action recommendations |
+| `CreateAppealInputSchema`          | `CreateAppealInput`          | Create new appeal      |
+| `UpdateAppealInputSchema`          | `UpdateAppealInput`          | Update existing appeal |
+| `ListAppealsInputSchema`           | `ListAppealsInput`           | Query appeals          |
+| `CreateWriteOffInputSchema`        | `CreateWriteOffInput`        | Create write-off       |
+| `ListWriteOffsInputSchema`         | `ListWriteOffsInput`         | Query write-offs       |
+| `CreateRebillInputSchema`          | `CreateRebillInput`          | Create rebill          |
+| `UpdateRebillInputSchema`          | `UpdateRebillInput`          | Update rebill          |
+| `ListRebillsInputSchema`           | `ListRebillsInput`           | Query rebills          |
+| `CreatePaymentVarianceInputSchema` | `CreatePaymentVarianceInput` | Create variance        |
+| `UpdatePaymentVarianceInputSchema` | `UpdatePaymentVarianceInput` | Update variance        |
+| `ListPaymentVariancesInputSchema`  | `ListPaymentVariancesInput`  | Query variances        |
 
 ### Seed Data Schemas
 
 For database seeding with string dates instead of Date objects:
 
-| Schema | Type | Description |
-|--------|------|-------------|
-| `ClaimSeedSchema` | `ClaimSeed` | Seed data for claims |
-| `DenialSeedSchema` | `DenialSeed` | Seed data for denials |
-| `AppealSeedSchema` | `AppealSeed` | Seed data for appeals |
-| `PayerSeedSchema` | `PayerSeed` | Seed data for payers |
-| `WriteOffSeedSchema` | `WriteOffSeed` | Seed data for write-offs |
-| `RebillSeedSchema` | `RebillSeed` | Seed data for rebills |
-| `PaymentVarianceSeedSchema` | `PaymentVarianceSeed` | Seed data for variances |
+| Schema                      | Type                  | Description              |
+| --------------------------- | --------------------- | ------------------------ |
+| `ClaimSeedSchema`           | `ClaimSeed`           | Seed data for claims     |
+| `DenialSeedSchema`          | `DenialSeed`          | Seed data for denials    |
+| `AppealSeedSchema`          | `AppealSeed`          | Seed data for appeals    |
+| `PayerSeedSchema`           | `PayerSeed`           | Seed data for payers     |
+| `WriteOffSeedSchema`        | `WriteOffSeed`        | Seed data for write-offs |
+| `RebillSeedSchema`          | `RebillSeed`          | Seed data for rebills    |
+| `PaymentVarianceSeedSchema` | `PaymentVarianceSeed` | Seed data for variances  |
 
 ### Analytics Schemas
 
-| Schema | Type | Description |
-|--------|------|-------------|
-| `DenialAnalyticsSchema` | `DenialAnalytics` | Denial pattern analytics |
-| `AppealAnalyticsSchema` | `AppealAnalytics` | Appeal success metrics |
-| `WriteOffAnalyticsSchema` | `WriteOffAnalytics` | Write-off summaries |
-| `RebillAnalyticsSchema` | `RebillAnalytics` | Rebill recovery metrics |
-| `PaymentVarianceAnalyticsSchema` | `PaymentVarianceAnalytics` | Variance patterns |
+| Schema                           | Type                       | Description              |
+| -------------------------------- | -------------------------- | ------------------------ |
+| `DenialAnalyticsSchema`          | `DenialAnalytics`          | Denial pattern analytics |
+| `AppealAnalyticsSchema`          | `AppealAnalytics`          | Appeal success metrics   |
+| `WriteOffAnalyticsSchema`        | `WriteOffAnalytics`        | Write-off summaries      |
+| `RebillAnalyticsSchema`          | `RebillAnalytics`          | Rebill recovery metrics  |
+| `PaymentVarianceAnalyticsSchema` | `PaymentVarianceAnalytics` | Variance patterns        |
 
 ### Enum Schemas
 
-| Schema | Values |
-|--------|--------|
-| `ClaimStatusSchema` | `pending`, `submitted`, `paid`, `denied`, `appealed`, `written_off` |
-| `AppealTypeSchema` | `first_level`, `second_level`, `third_level`, `external_review` |
-| `AppealStatusSchema` | `pending`, `in_progress`, `submitted`, `under_review`, `approved`, `denied`, `partially_approved`, `withdrawn` |
-| `AppealPrioritySchema` | `high`, `medium`, `low` |
-| `WriteOffReasonSchema` | `below_threshold`, `timely_filing_expired`, `non_covered_service`, `patient_responsibility`, `contract_adjustment`, `uncollectible`, `other` |
-| `RebillReasonSchema` | `corrected_coding`, `added_modifier`, `updated_diagnosis`, `corrected_info`, `resubmit_timely`, `provider_change`, `other` |
-| `RebillStatusSchema` | `pending`, `submitted`, `accepted`, `paid`, `denied_again`, `partially_paid` |
-| `VarianceTypeSchema` | `underpayment`, `overpayment`, `expected` |
+| Schema                 | Values                                                                                                                                                                                                |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ClaimStatusSchema`    | `pending`, `submitted`, `paid`, `denied`, `appealed`, `written_off`                                                                                                                                   |
+| `AppealTypeSchema`     | `first_level`, `second_level`, `third_level`, `external_review`                                                                                                                                       |
+| `AppealStatusSchema`   | `pending`, `in_progress`, `submitted`, `under_review`, `approved`, `denied`, `partially_approved`, `withdrawn`                                                                                        |
+| `AppealPrioritySchema` | `high`, `medium`, `low`                                                                                                                                                                               |
+| `WriteOffReasonSchema` | `below_threshold`, `timely_filing_expired`, `non_covered_service`, `patient_responsibility`, `contract_adjustment`, `uncollectible`, `other`                                                          |
+| `RebillReasonSchema`   | `corrected_coding`, `added_modifier`, `updated_diagnosis`, `corrected_info`, `resubmit_timely`, `provider_change`, `other`                                                                            |
+| `RebillStatusSchema`   | `pending`, `submitted`, `accepted`, `paid`, `denied_again`, `partially_paid`                                                                                                                          |
+| `VarianceTypeSchema`   | `underpayment`, `overpayment`, `expected`                                                                                                                                                             |
 | `VarianceReasonSchema` | `contract_adjustment`, `bundling`, `non_covered_service`, `missing_authorization`, `credentialing_issue`, `coordination_of_benefits`, `incorrect_coding`, `timely_filing`, `duplicate_claim`, `other` |
 
 ## Example: MCP Server Integration

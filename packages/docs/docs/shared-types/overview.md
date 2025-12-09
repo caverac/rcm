@@ -60,13 +60,13 @@ if (!result.success) {
 
 ## Schema Categories
 
-| Category | Examples | Use Case |
-|----------|----------|----------|
-| **Entity** | `ClaimSchema`, `DenialSchema`, `AppealSchema` | Database records |
-| **Input** | `CreateAppealInputSchema`, `ListAppealsInputSchema` | API/tool parameters |
-| **Seed** | `ClaimSeedSchema`, `AppealSeedSchema` | Database seeding (string dates) |
-| **Analytics** | `DenialAnalyticsSchema`, `AppealAnalyticsSchema` | Aggregated metrics |
-| **Enum** | `ClaimStatusSchema`, `AppealTypeSchema` | Constrained string values |
+| Category      | Examples                                            | Use Case                        |
+| ------------- | --------------------------------------------------- | ------------------------------- |
+| **Entity**    | `ClaimSchema`, `DenialSchema`, `AppealSchema`       | Database records                |
+| **Input**     | `CreateAppealInputSchema`, `ListAppealsInputSchema` | API/tool parameters             |
+| **Seed**      | `ClaimSeedSchema`, `AppealSeedSchema`               | Database seeding (string dates) |
+| **Analytics** | `DenialAnalyticsSchema`, `AppealAnalyticsSchema`    | Aggregated metrics              |
+| **Enum**      | `ClaimStatusSchema`, `AppealTypeSchema`             | Constrained string values       |
 
 ## Example: MCP Server
 

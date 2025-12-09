@@ -8,10 +8,7 @@
     "clean": "rm -rf dist cdk.out",
     "watch": "tsc --watch",
     "type-check": "tsc --noEmit",
-    "cdk": "cdk",
-    "deploy": "cdk deploy",
-    "diff": "cdk diff",
-    "synth": "cdk synth"
+    "cdk": "cdk"
   },
   "dependencies": {
     "aws-cdk-lib": "^2.232.1",

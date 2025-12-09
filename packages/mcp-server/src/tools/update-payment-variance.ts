@@ -1,4 +1,4 @@
-import { query } from '../db.js'
+import { query, QueryParam } from '../db.js'
 import { UpdatePaymentVarianceInput, PaymentVariance } from '../types.js'
 
 export async function updatePaymentVariance(
@@ -16,7 +16,7 @@ export async function updatePaymentVariance(
 
   // Build dynamic update query
   const updates: string[] = []
-  const values: any[] = []
+  const values: QueryParam[] = []
   let paramCount = 1
 
   if (variance_reason !== undefined) {

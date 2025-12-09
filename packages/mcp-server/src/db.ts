@@ -29,9 +29,12 @@ export function getPool(): Pool {
   return pool
 }
 
-export async function query<T = any>(
+// Query parameter type - supports all PostgreSQL-compatible values
+export type QueryParam = string | number | boolean | Date | null | undefined
+
+export async function query<T>(
   text: string,
-  params?: any[]
+  params?: QueryParam[]
 ): Promise<T[]> {
   const pool = getPool()
   const result = await pool.query(text, params)

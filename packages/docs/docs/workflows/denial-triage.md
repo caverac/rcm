@@ -12,10 +12,10 @@ The denial triage workflow helps you quickly understand denial reasons and get a
 
 ## Tools Used
 
-| Tool | Purpose |
-|------|---------|
-| `classify_denial` | Look up denial code in library, get category and resolution guidance |
-| `suggest_next_action` | Apply organization policies to recommend action |
+| Tool                  | Purpose                                                              |
+| --------------------- | -------------------------------------------------------------------- |
+| `classify_denial`     | Look up denial code in library, get category and resolution guidance |
+| `suggest_next_action` | Apply organization policies to recommend action                      |
 
 ## Example: CO-197 Authorization Denial
 
@@ -70,6 +70,7 @@ The `suggest_next_action` tool applies organization policies:
 > This is an AUTHORIZATION denial (CO-197 - precertification absent). Based on your organization's policy, I recommend appealing within 15 days since the $500 amount exceeds the $250 threshold. The estimated recovery chance is 65%.
 >
 > **Next Steps:**
+>
 > 1. Gather pre-auth documentation
 > 2. Submit appeal with medical necessity justification
 > 3. Track status for follow-up
@@ -78,12 +79,12 @@ The `suggest_next_action` tool applies organization policies:
 
 The database includes these denials you can test with:
 
-| Claim ID | Denial Code | Amount | Category | Recommended Action |
-|----------|-------------|--------|----------|-------------------|
-| CLM-2024-001235 | CO-197 | $500 | Authorization | Appeal |
-| CLM-2024-001236 | PR-1 | $15 | Patient Responsibility | Write-off |
-| CLM-2024-001237 | CO-4 | $250 | Coding Error | Rebill |
-| CLM-2024-001235 | CO-50 | $500 | Medical Necessity | Appeal |
+| Claim ID        | Denial Code | Amount | Category               | Recommended Action |
+| --------------- | ----------- | ------ | ---------------------- | ------------------ |
+| CLM-2024-001235 | CO-197      | $500   | Authorization          | Appeal             |
+| CLM-2024-001236 | PR-1        | $15    | Patient Responsibility | Write-off          |
+| CLM-2024-001237 | CO-4        | $250   | Coding Error           | Rebill             |
+| CLM-2024-001235 | CO-50       | $500   | Medical Necessity      | Appeal             |
 
 ## Customization
 

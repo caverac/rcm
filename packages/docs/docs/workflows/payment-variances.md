@@ -12,20 +12,20 @@ Payment variances occur when payers pay different amounts than expected. AI help
 
 ## Tools Used
 
-| Tool | Purpose |
-|------|---------|
-| `create_payment_variance` | Track underpayments/overpayments |
-| `update_payment_variance` | Update resolution, link to appeals |
-| `list_payment_variances` | Query variances with filters |
+| Tool                             | Purpose                                |
+| -------------------------------- | -------------------------------------- |
+| `create_payment_variance`        | Track underpayments/overpayments       |
+| `update_payment_variance`        | Update resolution, link to appeals     |
+| `list_payment_variances`         | Query variances with filters           |
 | `get_payment_variance_analytics` | Payer patterns and contract compliance |
 
 ## Example: Seeded Payment Variance
 
 The database contains 1 seeded payment variance (Medicare underpayment):
 
-| Variance | Claim | Payer | Expected | Actual | Variance | Type |
-|----------|-------|-------|----------|--------|----------|------|
-| b50e8400...001 | CLM-2024-001890 | Medicare | $500 | $425 | -$75 (-15%) | underpayment |
+| Variance       | Claim           | Payer    | Expected | Actual | Variance    | Type         |
+| -------------- | --------------- | -------- | -------- | ------ | ----------- | ------------ |
+| b50e8400...001 | CLM-2024-001890 | Medicare | $500     | $425   | -$75 (-15%) | underpayment |
 
 ### Check Payment Variances
 
@@ -46,10 +46,10 @@ The `list_payment_variances` tool retrieves variances:
       "id": "b50e8400-e29b-41d4-a716-446655440001",
       "claim_id": "650e8400-e29b-41d4-a716-446655440006",
       "payer_id": "550e8400-e29b-41d4-a716-446655440003",
-      "expected_amount": 500.00,
-      "actual_amount": 425.00,
-      "variance_amount": -75.00,
-      "variance_percentage": -15.00,
+      "expected_amount": 500.0,
+      "actual_amount": 425.0,
+      "variance_amount": -75.0,
+      "variance_percentage": -15.0,
       "variance_type": "underpayment",
       "variance_reason": "contract_adjustment",
       "payment_date": "2024-02-25",
@@ -59,7 +59,7 @@ The `list_payment_variances` tool retrieves variances:
     }
   ],
   "total": 1,
-  "total_variance": -75.00
+  "total_variance": -75.0
 }
 ```
 
@@ -109,17 +109,17 @@ The `get_payment_variance_analytics` tool returns:
 ```json
 {
   "total_variances": 1,
-  "total_variance_amount": -75.00,
-  "underpayment_total": 75.00,
+  "total_variance_amount": -75.0,
+  "underpayment_total": 75.0,
   "overpayment_total": 0,
   "by_type": {
-    "underpayment": { "count": 1, "amount": -75.00 }
+    "underpayment": { "count": 1, "amount": -75.0 }
   },
   "by_reason": {
-    "contract_adjustment": { "count": 1, "amount": -75.00 }
+    "contract_adjustment": { "count": 1, "amount": -75.0 }
   },
   "by_payer": {
-    "Medicare": { "count": 1, "amount": -75.00, "avg_variance_pct": -15.0 }
+    "Medicare": { "count": 1, "amount": -75.0, "avg_variance_pct": -15.0 }
   },
   "unresolved_count": 1,
   "insights": [
@@ -158,21 +158,21 @@ graph TD
 
 ## Variance Types (Auto-Calculated)
 
-| Type | Condition | Action |
-|------|-----------|--------|
-| `underpayment` | Actual less than Expected | Review for appeal |
-| `overpayment` | Actual greater than Expected | Return or adjust |
-| `expected` | Within 1 cent | No action needed |
+| Type           | Condition                    | Action            |
+| -------------- | ---------------------------- | ----------------- |
+| `underpayment` | Actual less than Expected    | Review for appeal |
+| `overpayment`  | Actual greater than Expected | Return or adjust  |
+| `expected`     | Within 1 cent                | No action needed  |
 
 ## Variance Reasons
 
-| Reason | Description | Typical Recovery |
-|--------|-------------|-----------------|
-| `contract_adjustment` | Rate differs from contract | High (95%) |
-| `bundling` | Services bundled/downcoded | Medium (70%) |
-| `non_covered_service` | Partial denial | Low (30%) |
-| `incorrect_coding` | Downcoded by payer | High (85%) |
-| `coordination_of_benefits` | COB adjustment | Varies |
+| Reason                     | Description                | Typical Recovery |
+| -------------------------- | -------------------------- | ---------------- |
+| `contract_adjustment`      | Rate differs from contract | High (95%)       |
+| `bundling`                 | Services bundled/downcoded | Medium (70%)     |
+| `non_covered_service`      | Partial denial             | Low (30%)        |
+| `incorrect_coding`         | Downcoded by payer         | High (85%)       |
+| `coordination_of_benefits` | COB adjustment             | Varies           |
 
 ## Key Analytics
 

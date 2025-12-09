@@ -12,10 +12,10 @@ Pre-submission validation catches errors before claims are sent to payers, preve
 
 ## Tools Used
 
-| Tool | Purpose |
-|------|---------|
-| `normalize_claim` | Validate claim format and required fields |
-| `audit_coding` | Check CPT/diagnosis codes against coding rules |
+| Tool              | Purpose                                        |
+| ----------------- | ---------------------------------------------- |
+| `normalize_claim` | Validate claim format and required fields      |
+| `audit_coding`    | Check CPT/diagnosis codes against coding rules |
 
 ## Example: Validate a New Claim
 
@@ -64,7 +64,6 @@ The `audit_coding` tool checks against coding rules in the database:
 > Found 2 issues before submission:
 >
 > 1. **Missing Modifier 25** - E/M code 99213 with procedure 11055 on same day requires modifier 25. Without it, the payer will bundle and deny the E/M.
->
 > 2. **Diagnosis Too General** - Z00.00 is too general and may not support medical necessity. Use a more specific diagnosis code.
 >
 > **Fix these to avoid denials like the CO-4 we had on CLM-2024-001237** (which was denied for the same modifier issue).
@@ -73,12 +72,12 @@ The `audit_coding` tool checks against coding rules in the database:
 
 The database includes these validation rules:
 
-| Rule | Type | Trigger | Action |
-|------|------|---------|--------|
-| Modifier 25 Required | modifier_required | E/M + procedure same day | Add modifier 25 |
-| Bilateral Modifier 50 | modifier_required | Bilateral procedures | Add modifier 50 |
-| Invalid Z00.00 | diagnosis_support | Z00.00 used | Use specific diagnosis |
-| Modifier 59 | modifier_required | Distinct procedures | Add modifier 59 |
+| Rule                  | Type              | Trigger                  | Action                 |
+| --------------------- | ----------------- | ------------------------ | ---------------------- |
+| Modifier 25 Required  | modifier_required | E/M + procedure same day | Add modifier 25        |
+| Bilateral Modifier 50 | modifier_required | Bilateral procedures     | Add modifier 50        |
+| Invalid Z00.00        | diagnosis_support | Z00.00 used              | Use specific diagnosis |
+| Modifier 59           | modifier_required | Distinct procedures      | Add modifier 59        |
 
 ## Real-World Prevention
 
@@ -117,11 +116,11 @@ sequenceDiagram
 
 ## Common Errors Caught
 
-| Error Type | Impact | Detection Rate | Example |
-|------------|--------|----------------|---------|
-| Missing Modifier 25 | 40% of coding denials | 100% | "99213 with procedure needs -25" |
-| Invalid Dx Support | 25% of coding denials | 98% | "Z00.00 doesn't support 99213" |
-| NCCI Bundling | 20% of coding denials | 99% | "43239 bundles into 43235" |
+| Error Type          | Impact                | Detection Rate | Example                          |
+| ------------------- | --------------------- | -------------- | -------------------------------- |
+| Missing Modifier 25 | 40% of coding denials | 100%           | "99213 with procedure needs -25" |
+| Invalid Dx Support  | 25% of coding denials | 98%            | "Z00.00 doesn't support 99213"   |
+| NCCI Bundling       | 20% of coding denials | 99%            | "43239 bundles into 43235"       |
 
 ## Next Steps
 

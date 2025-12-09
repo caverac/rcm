@@ -101,7 +101,9 @@ export async function seedDenials(client: Client): Promise<void> {
         denial.rebill_date || null,
       ]
     )
-    logger.debug(`Inserted denial: ${denial.denial_code} for claim ${denial.claim_id}`)
+    logger.debug(
+      `Inserted denial: ${denial.denial_code} for claim ${denial.claim_id}`
+    )
   }
 
   logger.info(`Seeded ${denials.length} denials`)

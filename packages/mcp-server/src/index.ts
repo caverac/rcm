@@ -52,7 +52,12 @@ import type { AuditCodingInput } from './types.js'
 // Helper to create error response
 function errorResponse(message: string) {
   return {
-    content: [{ type: 'text' as const, text: JSON.stringify({ error: message }, null, 2) }],
+    content: [
+      {
+        type: 'text' as const,
+        text: JSON.stringify({ error: message }, null, 2),
+      },
+    ],
     isError: true,
   }
 }
@@ -65,12 +70,17 @@ function successResponse(data: unknown) {
 }
 
 // Helper to check database and return error if not available
-async function requireDatabase(): Promise<{ available: true } | { available: false; response: ReturnType<typeof errorResponse> }> {
+async function requireDatabase(): Promise<
+  | { available: true }
+  | { available: false; response: ReturnType<typeof errorResponse> }
+> {
   const dbAvailable = await isDatabaseAvailable()
   if (!dbAvailable) {
     return {
       available: false,
-      response: errorResponse('Database not available. Set DATABASE_URL environment variable.'),
+      response: errorResponse(
+        'Database not available. Set DATABASE_URL environment variable.'
+      ),
     }
   }
   return { available: true }
@@ -224,7 +234,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       // Legacy tools
       case 'create_claim': {
-        const { patientId, amount } = toolArgs as { patientId: string; amount: number }
+        const { patientId, amount } = toolArgs as {
+          patientId: string
+          amount: number
+        }
         const claimId = `CLM-${Date.now()}`
         const result = await query(
           `INSERT INTO claims (claim_id, patient_id, status, amount)
@@ -236,7 +249,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_claim': {
         const { claimId } = toolArgs as { claimId: string }
-        const result = await query('SELECT * FROM claims WHERE claim_id = $1', [claimId])
+        const result = await query('SELECT * FROM claims WHERE claim_id = $1', [
+          claimId,
+        ])
         if (result.length === 0) {
           return errorResponse('Claim not found')
         }
@@ -244,7 +259,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'update_claim_status': {
-        const { claimId, status } = toolArgs as { claimId: string; status: ClaimStatus }
+        const { claimId, status } = toolArgs as {
+          claimId: string
+          status: ClaimStatus
+        }
         const result = await query(
           'UPDATE claims SET status = $1, updated_at = now() WHERE claim_id = $2 RETURNING *',
           [status, claimId]
@@ -258,8 +276,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'list_claims': {
         const { patientId } = (toolArgs as { patientId?: string }) || {}
         const result = patientId
-          ? await query('SELECT * FROM claims WHERE patient_id = $1', [patientId])
-          : await query('SELECT * FROM claims ORDER BY created_at DESC LIMIT 100')
+          ? await query('SELECT * FROM claims WHERE patient_id = $1', [
+              patientId,
+            ])
+          : await query(
+              'SELECT * FROM claims ORDER BY created_at DESC LIMIT 100'
+            )
         return successResponse(result)
       }
 
@@ -268,7 +290,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
   } catch (error) {
     console.error(`Error in ${name}:`, error)
-    return errorResponse(error instanceof Error ? error.message : 'Unknown error')
+    return errorResponse(
+      error instanceof Error ? error.message : 'Unknown error'
+    )
   }
 })
 

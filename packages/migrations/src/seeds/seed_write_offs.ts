@@ -43,7 +43,9 @@ export async function seedWriteOffs(client: Client): Promise<void> {
         writeOff.is_preventable,
       ]
     )
-    logger.debug(`Inserted write-off: ${writeOff.id} ($${writeOff.write_off_amount})`)
+    logger.debug(
+      `Inserted write-off: ${writeOff.id} ($${writeOff.write_off_amount})`
+    )
   }
 
   logger.info(`Seeded ${writeOffs.length} write-offs`)

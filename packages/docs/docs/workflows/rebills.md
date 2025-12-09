@@ -12,20 +12,20 @@ Rebilling involves correcting and resubmitting claims that were denied due to fi
 
 ## Tools Used
 
-| Tool | Purpose |
-|------|---------|
-| `create_rebill` | Create rebill after correcting denied claim |
-| `update_rebill` | Update rebill status and resolution |
-| `list_rebills` | Query rebills with filters |
-| `get_rebill_analytics` | Success rates by correction type |
+| Tool                   | Purpose                                     |
+| ---------------------- | ------------------------------------------- |
+| `create_rebill`        | Create rebill after correcting denied claim |
+| `update_rebill`        | Update rebill status and resolution         |
+| `list_rebills`         | Query rebills with filters                  |
+| `get_rebill_analytics` | Success rates by correction type            |
 
 ## Example: Seeded Rebill
 
 The database contains 1 seeded rebill for the CO-4 modifier error:
 
-| Rebill | Original Claim | New Claim | Amount | Status | Recovered |
-|--------|----------------|-----------|--------|--------|-----------|
-| a50e8400...001 | CLM-2024-001237 | CLM-2024-001567 | $250 | paid | $200 |
+| Rebill         | Original Claim  | New Claim       | Amount | Status | Recovered |
+| -------------- | --------------- | --------------- | ------ | ------ | --------- |
+| a50e8400...001 | CLM-2024-001237 | CLM-2024-001567 | $250   | paid   | $200      |
 
 ### Check Rebill Status
 
@@ -54,11 +54,11 @@ The `list_rebills` tool retrieves rebills:
         "change_description": "Added modifier 25 to E/M code 99213"
       },
       "reason_notes": "Modifier 25 required when billing E/M service on same day as procedure per payer guidelines",
-      "rebill_amount": 250.00,
+      "rebill_amount": 250.0,
       "status": "paid",
       "submitted_date": "2024-02-10",
       "resolution_date": "2024-02-20",
-      "recovered_amount": 200.00,
+      "recovered_amount": 200.0,
       "created_by": "Coding Specialist"
     }
   ],
@@ -91,12 +91,17 @@ The `get_rebill_analytics` tool returns:
 ```json
 {
   "total_rebills": 1,
-  "total_amount": 250.00,
-  "total_recovered": 200.00,
+  "total_amount": 250.0,
+  "total_recovered": 200.0,
   "success_rate": 100,
   "recovery_rate": 80,
   "by_reason": {
-    "added_modifier": { "count": 1, "amount": 250.00, "recovered": 200.00, "success_rate": 100 }
+    "added_modifier": {
+      "count": 1,
+      "amount": 250.0,
+      "recovered": 200.0,
+      "success_rate": 100
+    }
   },
   "by_status": {
     "paid": 1
@@ -127,14 +132,14 @@ graph LR
 
 ## Rebill Reasons
 
-| Reason | Description | Typical Success Rate |
-|--------|-------------|---------------------|
-| `corrected_coding` | Fixed CPT/diagnosis codes | 85% |
-| `added_modifier` | Added required modifier | 90% |
-| `updated_diagnosis` | Changed/added diagnosis codes | 80% |
-| `corrected_info` | Fixed patient/provider info | 75% |
-| `resubmit_timely` | Resubmitting within timely filing | 70% |
-| `provider_change` | Changed rendering/billing provider | 65% |
+| Reason              | Description                        | Typical Success Rate |
+| ------------------- | ---------------------------------- | -------------------- |
+| `corrected_coding`  | Fixed CPT/diagnosis codes          | 85%                  |
+| `added_modifier`    | Added required modifier            | 90%                  |
+| `updated_diagnosis` | Changed/added diagnosis codes      | 80%                  |
+| `corrected_info`    | Fixed patient/provider info        | 75%                  |
+| `resubmit_timely`   | Resubmitting within timely filing  | 70%                  |
+| `provider_change`   | Changed rendering/billing provider | 65%                  |
 
 ## Correction Tracking
 
@@ -149,6 +154,7 @@ The `changes_made` field tracks exactly what was corrected:
 ```
 
 This enables:
+
 - Root cause analysis
 - Training identification
 - Prevention rule creation

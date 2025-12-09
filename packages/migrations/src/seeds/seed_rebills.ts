@@ -16,7 +16,8 @@ export async function seedRebills(client: Client): Promise<void> {
       changes_made: {
         original_codes: ['99213', '11102'],
         corrected_codes: ['99213-25', '11102'],
-        change_description: 'Added modifier 25 to E/M code 99213 to indicate significant, separately identifiable evaluation and management service',
+        change_description:
+          'Added modifier 25 to E/M code 99213 to indicate significant, separately identifiable evaluation and management service',
       },
       reason_notes:
         'Modifier 25 required when billing E/M service on same day as procedure per payer guidelines',

@@ -8,7 +8,7 @@ import {
 export async function classifyDenial(
   input: ClassifyDenialInput
 ): Promise<DenialClassification> {
-  const { denial_code, denial_text, claim_data } = input
+  const { denial_code, denial_text } = input
 
   // Look up denial code in library
   const results = await query<DenialCodeLibrary>(

@@ -76,56 +76,56 @@ What denials do we have in the system? Classify them and suggest next actions.
 
 ### Claims Management
 
-| Tool | Description |
-|------|-------------|
-| `normalize_claim` | Normalize and validate claim data from various formats (837, 835, JSON) |
-| `list_claims` | List claims with optional filters (patient, status) |
-| `get_claim` | Retrieve claim details by ID |
-| `update_claim_status` | Update claim status |
+| Tool                  | Description                                                             |
+| --------------------- | ----------------------------------------------------------------------- |
+| `normalize_claim`     | Normalize and validate claim data from various formats (837, 835, JSON) |
+| `list_claims`         | List claims with optional filters (patient, status)                     |
+| `get_claim`           | Retrieve claim details by ID                                            |
+| `update_claim_status` | Update claim status                                                     |
 
 ### Denial Classification
 
-| Tool | Description |
-|------|-------------|
-| `classify_denial` | Classify denial code and get resolution guidance |
-| `suggest_next_action` | Get policy-based recommendation (appeal, rebill, write-off) |
-| `batch_classify_denials` | Analyze multiple denials for patterns and insights |
-| `audit_coding` | Pre-submission coding validation |
+| Tool                     | Description                                                 |
+| ------------------------ | ----------------------------------------------------------- |
+| `classify_denial`        | Classify denial code and get resolution guidance            |
+| `suggest_next_action`    | Get policy-based recommendation (appeal, rebill, write-off) |
+| `batch_classify_denials` | Analyze multiple denials for patterns and insights          |
+| `audit_coding`           | Pre-submission coding validation                            |
 
 ### Appeals Management
 
-| Tool | Description |
-|------|-------------|
-| `create_appeal` | Create appeal for a denied claim |
-| `update_appeal` | Update appeal status, decision, payer response |
-| `list_appeals` | Query appeals (status, priority, overdue, assignee) |
-| `get_appeal_analytics` | Success rates, recovery metrics, insights |
+| Tool                   | Description                                         |
+| ---------------------- | --------------------------------------------------- |
+| `create_appeal`        | Create appeal for a denied claim                    |
+| `update_appeal`        | Update appeal status, decision, payer response      |
+| `list_appeals`         | Query appeals (status, priority, overdue, assignee) |
+| `get_appeal_analytics` | Success rates, recovery metrics, insights           |
 
 ### Write-offs
 
-| Tool | Description |
-|------|-------------|
-| `create_write_off` | Write off uncollectible amount with preventability tracking |
-| `list_write_offs` | Query write-offs (reason, category, preventability) |
-| `get_write_off_analytics` | Preventable write-off analysis |
+| Tool                      | Description                                                 |
+| ------------------------- | ----------------------------------------------------------- |
+| `create_write_off`        | Write off uncollectible amount with preventability tracking |
+| `list_write_offs`         | Query write-offs (reason, category, preventability)         |
+| `get_write_off_analytics` | Preventable write-off analysis                              |
 
 ### Rebills
 
-| Tool | Description |
-|------|-------------|
-| `create_rebill` | Create rebill after correcting denied claim |
-| `update_rebill` | Update rebill status and resolution |
-| `list_rebills` | Query rebills (status, reason, claim) |
-| `get_rebill_analytics` | Success rates by correction type |
+| Tool                   | Description                                 |
+| ---------------------- | ------------------------------------------- |
+| `create_rebill`        | Create rebill after correcting denied claim |
+| `update_rebill`        | Update rebill status and resolution         |
+| `list_rebills`         | Query rebills (status, reason, claim)       |
+| `get_rebill_analytics` | Success rates by correction type            |
 
 ### Payment Variances
 
-| Tool | Description |
-|------|-------------|
-| `create_payment_variance` | Track underpayments/overpayments |
-| `update_payment_variance` | Update resolution, link to appeals |
-| `list_payment_variances` | Query variances (type, payer, severity) |
-| `get_payment_variance_analytics` | Payer patterns and contract compliance |
+| Tool                             | Description                             |
+| -------------------------------- | --------------------------------------- |
+| `create_payment_variance`        | Track underpayments/overpayments        |
+| `update_payment_variance`        | Update resolution, link to appeals      |
+| `list_payment_variances`         | Query variances (type, payer, severity) |
+| `get_payment_variance_analytics` | Payer patterns and contract compliance  |
 
 ## Architecture
 

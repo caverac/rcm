@@ -48,12 +48,12 @@ Healthcare billing is one of the most complex domains in any industry. Here's wh
 
 The average claim denial rate is **5-10%**, but for some specialties it exceeds 20%. Common denial reasons include:
 
-| Category | Examples | Typical Resolution |
-|----------|----------|-------------------|
-| Authorization | Prior auth missing, referral required | Appeal with documentation |
-| Coding Errors | Wrong modifier, bundling issues | Rebill with corrections |
-| Medical Necessity | Service not deemed necessary | Appeal with clinical notes |
-| Patient Responsibility | Deductible, non-covered service | Patient billing or write-off |
+| Category               | Examples                              | Typical Resolution           |
+| ---------------------- | ------------------------------------- | ---------------------------- |
+| Authorization          | Prior auth missing, referral required | Appeal with documentation    |
+| Coding Errors          | Wrong modifier, bundling issues       | Rebill with corrections      |
+| Medical Necessity      | Service not deemed necessary          | Appeal with clinical notes   |
+| Patient Responsibility | Deductible, non-covered service       | Patient billing or write-off |
 
 ### 3. Revenue Leakage
 
@@ -194,24 +194,31 @@ erDiagram
 ### Entity Descriptions
 
 #### Payers
+
 Insurance companies that reimburse healthcare providers. Each payer has unique policies, fee schedules, and submission requirements.
 
 #### Claims
+
 The fundamental unit of healthcare billing. A claim represents services provided to a patient, submitted to a payer for reimbursement. Contains procedure codes (CPT), diagnosis codes (ICD-10), and billing amounts.
 
 #### Denials
+
 When a payer refuses to pay a claim. Each denial has a standardized code (CO-197, PR-1, etc.) indicating the reason. Denials must be resolved through appeals, rebills, or write-offs.
 
 #### Appeals
+
 Formal requests asking payers to reconsider denied claims. Appeals require supporting documentation and must be filed within payer-specific deadlines (typically 30-180 days).
 
 #### Write-offs
+
 Decisions to stop pursuing payment, accepting the financial loss. Write-offs should be policy-driven (e.g., small balances below threshold) and tracked for preventability analysis.
 
 #### Rebills
+
 Corrected claims submitted after fixing errors identified in the original denial. Common corrections include adding modifiers, updating codes, or attaching missing documentation.
 
 #### Payment Variances
+
 Discrepancies between expected and actual payment amounts. Underpayments may indicate contract violations or incorrect fee schedule application.
 
 ## Data Flow Example

@@ -79,7 +79,6 @@ Track appeal lifecycle with success rate analytics.
 
 Manage uncollectible denials and correction processes.
 
-
 ## This is a Demo
 
 **Important:** RCM is a demonstration platform designed to showcase AI capabilities in healthcare revenue cycle management. It's not a production-ready system, but rather a proof-of-concept showing how conversational AI can transform complex billing workflows.

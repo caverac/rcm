@@ -1,4 +1,4 @@
-import { query } from '../db.js'
+import { query, QueryParam } from '../db.js'
 import { ListAppealsInput, Appeal } from '../types.js'
 
 export async function listAppeals(input: ListAppealsInput): Promise<Appeal[]> {
@@ -14,7 +14,7 @@ export async function listAppeals(input: ListAppealsInput): Promise<Appeal[]> {
 
   // Build dynamic WHERE clause
   const conditions: string[] = []
-  const values: any[] = []
+  const values: QueryParam[] = []
   let paramCount = 1
 
   if (status !== undefined) {
